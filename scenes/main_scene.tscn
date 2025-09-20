@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://13hh6g4xgxgd"]
+
+[ext_resource type="Script" uid="uid://lgkum02yqeyl" path="res://assets/scripts/player/PlayerMovement.cs" id="1_pw63i"]
+[ext_resource type="SpriteFrames" uid="uid://c4cvgjgaobnej" path="res://scenes/kernel-animations.tres" id="1_w2twt"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_w2twt"]
+radius = 25.0
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Player" type="CharacterBody2D" parent="."]
+position = Vector2(0, -1)
+script = ExtResource("1_pw63i")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+position = Vector2(0, 5)
+shape = SubResource("CircleShape2D_w2twt")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player"]
+sprite_frames = ExtResource("1_w2twt")
+animation = &"standby"

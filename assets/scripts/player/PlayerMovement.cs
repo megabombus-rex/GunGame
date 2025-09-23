@@ -9,6 +9,7 @@ public partial class PlayerMovement : CharacterBody2D
     }
 
     private AnimatedSprite2D _animatedSprite;
+    private CollisionShape2D _collisionShape;
 
     //private string _previousAnimation;
 
@@ -16,37 +17,64 @@ public partial class PlayerMovement : CharacterBody2D
     public int Speed { get; set; } = 400;
 
     [Export]
-    public double FrictionX { get; set; } = 0.1;
+    public float FrictionX { get; set; } = 1000.0f;
+    [Export]
+    public float FrictionY { get; set; } = 2000.0f;
 
-    private void GetInput()
+    private Vector2 ApplyFriction(double delta, Vector2 currentVelocity)
     {
+        if (currentVelocity.Length() > 0.01f)
+        {
+            Vector2 frictionForce = -currentVelocity.Normalized() * new Vector2(FrictionX, FrictionY) * (float)delta;
 
-        Vector2 inputDirection = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
-        Velocity = inputDirection * Speed;
+            if (frictionForce.Length() >= currentVelocity.Length())
+            {
+                currentVelocity = Vector2.Zero;
+            }
+            else
+            {
+                currentVelocity += frictionForce;
+            }
+        }
+
+        return currentVelocity;
     }
+
+    private Vector2 GetUpdatedVelocity(double delta, Vector2 currentVelocity)
+    {
+        float verticalInput = Input.GetAxis("ui_up", "ui_down");
+        float horizontalInput = Input.GetAxis("ui_left", "ui_right");
+
+        Vector2 updatedVelocity = currentVelocity;
+
+        if (verticalInput != 0)
+        {
+            updatedVelocity.Y = verticalInput * Speed;
+        }
+
+        if (horizontalInput != 0)
+        {
+            updatedVelocity.X = horizontalInput * Speed;
+        }
+
+        updatedVelocity = ApplyFriction(delta, updatedVelocity);
+
+
+        return updatedVelocity;
+    }
+
 
     public override void _Ready()
     {
         _animatedSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+        _collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
+
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        Vector2 oldPosition = GlobalPosition;
-
-        GetInput();
-        MoveAndSlide();
-
-        Vector2 positionDelta = GlobalPosition - oldPosition;
-        if (positionDelta.Length() > 0.01f)
-        {
-            GD.Print($"[PHYSICS] Moved: {positionDelta}, New Position: {GlobalPosition}");
-        }
-
-        if (Velocity.Length() > 0.01f && positionDelta.Length() < 0.01f)
-        {
-            GD.Print("[PHYSICS] Velocity applied but no movement - possible collision");
-        }
+        Velocity = GetUpdatedVelocity(delta, Velocity);
+        var collision = MoveAndCollide(new Vector2(Velocity.X * (float)delta, Velocity.Y * (float)delta));
     }
 
     public override void _Process(double delta)

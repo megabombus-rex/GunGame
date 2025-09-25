@@ -1,36 +1,47 @@
-[gd_scene load_steps=6 format=3 uid="uid://13hh6g4xgxgd"]
+[gd_scene load_steps=7 format=3 uid="uid://13hh6g4xgxgd"]
 
-[ext_resource type="Script" uid="uid://lgkum02yqeyl" path="res://assets/scripts/player/PlayerMovement.cs" id="1_pw63i"]
 [ext_resource type="SpriteFrames" uid="uid://c4cvgjgaobnej" path="res://scenes/kernel-animations.tres" id="1_w2twt"]
 [ext_resource type="Texture2D" uid="uid://bxodjufrjmmfa" path="res://assets/sprites/blocks/Blank-texture-64x64.png" id="3_7ykc4"]
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_w2twt"]
-radius = 25.0
+[ext_resource type="Script" uid="uid://knqkviihkbb8" path="res://assets/scripts/player/PlayerMovementRigidbody.cs" id="3_pu3yx"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7ykc4"]
 size = Vector2(64, 64)
 
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_pw63i"]
+friction = 0.3
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_w2twt"]
+radius = 25.0
+
 [node name="Node2D" type="Node2D"]
 
-[node name="Player" type="CharacterBody2D" parent="."]
-position = Vector2(275, 249)
-script = ExtResource("1_pw63i")
-metadata/_edit_group_ = true
+[node name="Ground" type="RigidBody2D" parent="."]
+position = Vector2(519, 388)
+scale = Vector2(5.559995, 1)
+collision_layer = 7
+collision_mask = 7
+gravity_scale = 0.0
+lock_rotation = true
+freeze = true
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
-position = Vector2(0, 5)
-shape = SubResource("CircleShape2D_w2twt")
+[node name="Sprite2D" type="Sprite2D" parent="Ground"]
+texture = ExtResource("3_7ykc4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
+shape = SubResource("RectangleShape2D_7ykc4")
+
+[node name="Player" type="RigidBody2D" parent="."]
+position = Vector2(378, 282)
+collision_mask = 2
+physics_material_override = SubResource("PhysicsMaterial_pw63i")
+lock_rotation = true
+script = ExtResource("3_pu3yx")
+metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player"]
 sprite_frames = ExtResource("1_w2twt")
 animation = &"standby"
 
-[node name="Ground" type="RigidBody2D" parent="."]
-position = Vector2(519, 388)
-gravity_scale = 0.0
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
-shape = SubResource("RectangleShape2D_7ykc4")
-
-[node name="Sprite2D" type="Sprite2D" parent="Ground"]
-texture = ExtResource("3_7ykc4")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+position = Vector2(0, 5)
+shape = SubResource("CircleShape2D_w2twt")

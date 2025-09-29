@@ -1,6 +1,7 @@
 using Godot;
 using GunGame.assets.scripts;
-using System;
+using System.Collections.Generic;
+using System.Linq;
 
 public partial class PlayerMovementRigidbody : RigidBody2D
 {
@@ -10,8 +11,11 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         walk = 1
     }
 
-    private AnimatedSprite2D _animatedSprite;
-    private CollisionShape2D _collisionShape;
+    private AnimatedSprite2D _playerAnimation;
+    private CollisionShape2D _playerHitbox;
+    private Area2D _pickupDetector;
+    private List<Area2D> _pickupList;
+    private Area2D _closestObject;
 
     private bool _isGrounded = false;
 
@@ -28,23 +32,34 @@ public partial class PlayerMovementRigidbody : RigidBody2D
 
     public override void _Ready()
     {
-        _animatedSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
-        _collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
+        _playerAnimation = GetNode<AnimatedSprite2D>("PlayerAnimation");
+        _playerHitbox = GetNode<CollisionShape2D>("Hitbox");
+
+        _pickupDetector = GetNode<Area2D>("PickupArea");
+        _pickupDetector.CollisionMask = 6;
+        _pickupDetector.AreaEntered += OnPickupRangeBodyEntered;
+        _pickupDetector.AreaExited += OnPickupRangeBodyExited;
+        _pickupList = new();
     }
 
 	public override void _Process(double delta)
 	{
+        if (_pickupList.Any())
+        {
+            FindClosestObjectForPickup();
+        }
+
         if ((LinearVelocity.X > 0.1 || LinearVelocity.X < -0.1) && _isGrounded)
         {
-            _animatedSprite.Play(AnimationState.walk.ToString());
+            _playerAnimation.Play(AnimationState.walk.ToString());
             return;
         }
         if ((LinearVelocity.Y > 0.1 || LinearVelocity.Y < -0.1) && !_isGrounded)
         {
-            _animatedSprite.Stop();
+            _playerAnimation.Stop();
             return;
         }
-        _animatedSprite.Play(AnimationState.standby.ToString());
+        _playerAnimation.Play(AnimationState.standby.ToString());
     }
 
     public override void _PhysicsProcess(double delta)
@@ -90,4 +105,30 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         return;
     }
 
+    private void OnPickupRangeBodyEntered(Area2D area)
+    {
+        _pickupList.Add(area);
+    }
+
+    private void OnPickupRangeBodyExited(Area2D area)
+    {
+        _pickupList.Remove(area);
+
+        if (_closestObject == area)
+        {
+            _closestObject = null;
+        }
+    }
+
+    private void FindClosestObjectForPickup()
+    {
+        var closestDistance = float.MaxValue;
+        foreach (var item in _pickupList)
+        {
+            if (item.GlobalPosition.DistanceTo(GlobalPosition) < closestDistance)
+            {
+                _closestObject = item;
+            }
+        }
+    }
 }

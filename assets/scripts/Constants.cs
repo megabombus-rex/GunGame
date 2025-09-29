@@ -12,7 +12,8 @@ namespace GunGame.assets.scripts
         public enum CollisionMask
         {
             Player = 1,
-            Platform = 2
+            Platform = 2,
+            Items = 4
         }
     }
 }

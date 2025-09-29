@@ -14,8 +14,9 @@ public partial class PlayerMovementRigidbody : RigidBody2D
     private AnimatedSprite2D _playerAnimation;
     private CollisionShape2D _playerHitbox;
     private Area2D _pickupDetector;
-    private List<Area2D> _pickupList;
-    private Area2D _closestObject;
+    private List<Area2D> _pickupList = new();
+    private Area2D _closestObject = null;
+    private Area2D _heldObject = null;
 
     private bool _isGrounded = false;
 
@@ -39,7 +40,6 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         _pickupDetector.CollisionMask = 6;
         _pickupDetector.AreaEntered += OnPickupRangeBodyEntered;
         _pickupDetector.AreaExited += OnPickupRangeBodyExited;
-        _pickupList = new();
     }
 
 	public override void _Process(double delta)
@@ -47,6 +47,22 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         if (_pickupList.Any())
         {
             FindClosestObjectForPickup();
+
+            if (Input.IsActionJustPressed("PickupItem"))
+            {
+                if (_heldObject != null) {
+                    _heldObject.Reparent(GetOwner());
+                    _heldObject = null;
+                }
+
+                if (_closestObject != null)
+                {
+                    _heldObject = _closestObject;
+                    _closestObject = null;
+                    _heldObject.Reparent(this);
+                    _heldObject.Position = new Vector2(0.0f, 0.0f);
+                }
+            }
         }
 
         if ((LinearVelocity.X > 0.1 || LinearVelocity.X < -0.1) && _isGrounded)

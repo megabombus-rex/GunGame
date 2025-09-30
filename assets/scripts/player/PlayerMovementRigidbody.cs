@@ -20,16 +20,12 @@ public partial class PlayerMovementRigidbody : RigidBody2D
 
     private bool _isGrounded = false;
 
-    [Export]
-    public int MaxSpeed { get; set; } = 40000;
-    [Export]
-    public float Acceleration { get; set; } = 1.0f;
-    [Export]
-    public float JumpForce { get; set; } = -400.0f;
+    [Export] public int MaxSpeed { get; set; } = 40000;
+    [Export] public float Acceleration { get; set; } = 1.0f;
+    [Export] public float JumpForce { get; set; } = -400.0f;
 
 
-    [Export]
-    public float GroundRayLength { get; set; } = 75.0f; // For ground detection
+    [Export] public float GroundRayLength { get; set; } = 75.0f; // For ground detection
 
     public override void _Ready()
     {
@@ -51,6 +47,11 @@ public partial class PlayerMovementRigidbody : RigidBody2D
             if (Input.IsActionJustPressed("PickupItem"))
             {
                 if (_heldObject != null) {
+                    if (_heldObject is BaseWeapon weapon)
+                    {
+                        weapon.IsHeld = false;
+                    }
+
                     _heldObject.Reparent(GetOwner());
                     _heldObject = null;
                 }
@@ -58,6 +59,10 @@ public partial class PlayerMovementRigidbody : RigidBody2D
                 if (_closestObject != null)
                 {
                     _heldObject = _closestObject;
+                    if (_heldObject is BaseWeapon weapon)
+                    {
+                        weapon.IsHeld = true;
+                    }
                     _closestObject = null;
                     _heldObject.Reparent(this);
                     _heldObject.Position = new Vector2(0.0f, 0.0f);

@@ -1,0 +1,21 @@
+[gd_scene load_steps=5 format=3 uid="uid://p06w2w72j06j"]
+
+[ext_resource type="Script" uid="uid://ccaytxlu4ts1t" path="res://assets/scripts/weapon/BaseWeapon.cs" id="1_uxn4k"]
+[ext_resource type="Texture2D" uid="uid://benpv0l8ra0sa" path="res://assets/sprites/weapons/Scar-H-32x16.png" id="1_xasec"]
+[ext_resource type="Texture2D" uid="uid://bn3w6lrhmpjav" path="res://assets/sprites/weapons/ammo/Bullet-S_64x64.png" id="2_bmw2d"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rt2n2"]
+radius = 33.01515
+
+[node name="Weapon" type="Area2D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_uxn4k")
+BulletTexture = ExtResource("2_bmw2d")
+metadata/_edit_group_ = true
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_xasec")
+
+[node name="PickupRange" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_rt2n2")

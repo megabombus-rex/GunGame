@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bn3w6lrhmpjav"
-path="res://.godot/imported/Bullet-S_64x64.png-511aa41d7904a29e9a78104a45fbfcdc.ctex"
+uid="uid://benpv0l8ra0sa"
+path="res://.godot/imported/Scar-H-32x16.png-4f63c0a55d97668c93cc05e072f762f9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/weapons/ammo/Bullet-S_64x64.png"
-dest_files=["res://.godot/imported/Bullet-S_64x64.png-511aa41d7904a29e9a78104a45fbfcdc.ctex"]
+source_file="res://assets/sprites/weapon/Scar-H-32x16.png"
+dest_files=["res://.godot/imported/Scar-H-32x16.png-4f63c0a55d97668c93cc05e072f762f9.ctex"]
 
 [params]
 

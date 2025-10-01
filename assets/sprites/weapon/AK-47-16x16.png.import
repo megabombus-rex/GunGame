@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://benpv0l8ra0sa"
-path="res://.godot/imported/Scar-H-32x16.png-164d733168f1fd65322f2ddcc20c9a8d.ctex"
+uid="uid://cv1ijdy3xipiv"
+path="res://.godot/imported/AK-47-16x16.png-dde83b54d9b2803a7f13bd2d313649eb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/weapons/Scar-H-32x16.png"
-dest_files=["res://.godot/imported/Scar-H-32x16.png-164d733168f1fd65322f2ddcc20c9a8d.ctex"]
+source_file="res://assets/sprites/weapon/AK-47-16x16.png"
+dest_files=["res://.godot/imported/AK-47-16x16.png-dde83b54d9b2803a7f13bd2d313649eb.ctex"]
 
 [params]
 

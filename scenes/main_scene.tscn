@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://13hh6g4xgxgd"]
+[gd_scene load_steps=10 format=3 uid="uid://13hh6g4xgxgd"]
 
 [ext_resource type="SpriteFrames" uid="uid://c4cvgjgaobnej" path="res://scenes/kernel-animations.tres" id="1_w2twt"]
 [ext_resource type="Texture2D" uid="uid://bxodjufrjmmfa" path="res://assets/sprites/blocks/Blank-texture-64x64.png" id="3_7ykc4"]
 [ext_resource type="Script" uid="uid://knqkviihkbb8" path="res://assets/scripts/player/PlayerMovementRigidbody.cs" id="3_pu3yx"]
-[ext_resource type="PackedScene" uid="uid://p06w2w72j06j" path="res://scenes/weapon.tscn" id="4_gubc5"]
+[ext_resource type="PackedScene" uid="uid://p06w2w72j06j" path="res://scenes/weapon/weapon.tscn" id="4_gubc5"]
+[ext_resource type="Script" uid="uid://bfqc0lteae3ma" path="res://assets/scripts/system/WeaponSpawnerSystem.cs" id="5_gubc5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7ykc4"]
 size = Vector2(64, 64)
@@ -62,3 +63,7 @@ shape = SubResource("CircleShape2D_gubc5")
 
 [node name="Weapon" parent="." instance=ExtResource("4_gubc5")]
 position = Vector2(506, 314)
+
+[node name="WeaponSpawner" type="Node2D" parent="."]
+script = ExtResource("5_gubc5")
+_spawnRatePerMinute = 20.0

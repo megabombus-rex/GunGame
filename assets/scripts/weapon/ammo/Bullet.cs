@@ -28,7 +28,6 @@ public partial class Bullet : Area2D
         }
     }
 
-    // to be used when instantinated by a bullet
     public virtual void Initialize(Vector2 dir, float speed, Texture2D texture = null)
     {
         _flightDirection = dir.Normalized();

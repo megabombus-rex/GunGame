@@ -1,25 +1,54 @@
 using Godot;
+using GunGame.assets.scripts.weapon;
 using GunGame.assets.scripts.weapon.ammo;
 using System;
 
 public partial class BaseWeapon : Area2D
 {
-	[Export] public Texture2D BulletTexture;
     [Export] public BulletType BulletType = BulletType.Small;
 	[Export] public float BulletSpeed = 100.0f;
+	[Export] public float FireRatePerSecond = 1.0f;
+	[Export] public Vector2 BulletSpawnOffset = new Vector2(0.0f, 0.0f);
 
-	public bool IsHeld { get { return _isHeld; } set { _isHeld = value; } }
+    public bool IsHeld { get { return _isHeld; } set { _isHeld = value; } }
 
 	private bool _isHeld = false;
-    private PackedScene _bulletScene = GD.Load<PackedScene>("res://scenes/bullet.tscn");
-	private string _baseBulletTexturePath = "res://assets/sprites/weapons/ammo/Bullet-S_64x64";
+	private float _firingCooldown = 0.0f;
+	private float _firingCooldownMaxVal = 1.0f; // this should not be changed
 
-	public override void _Ready()
+    private PackedScene _bulletScene = GD.Load<PackedScene>("res://scenes/weapon/ammo/bullet.tscn");
+	private Texture2D _bulletTexture;
+	private Texture2D _weaponTexture;
+
+	private Sprite2D _weaponSprite;
+
+	// this will be called when the weapon is initialized from the outside (weapon spawner eg.)
+	public void Initialize(WeaponStatPreset preset) 
 	{
-		if (BulletTexture == null)
+		BulletType = preset.BulletType;
+		BulletSpeed = preset.BulletSpeed;
+		FireRatePerSecond = preset.FireRatePerSecond;
+        _firingCooldownMaxVal = 1.0f / FireRatePerSecond;
+
+		BulletSpawnOffset = preset.BulletSpawnOffset;
+
+        try
 		{
-			BulletTexture = GD.Load<Texture2D>(_baseBulletTexturePath);
-		}
+			_weaponTexture = GD.Load<Texture2D>(preset.TexturePath);
+        }
+        catch (Exception e)
+		{
+			GD.Print("Exception while loading weapon texture: " + e);
+            _weaponTexture = GD.Load<Texture2D>("res://assets/sprites/blocks/Blank-texture-64x64.png");
+        }
+	}
+
+    public override void _Ready()
+	{
+		_bulletTexture = GD.Load<Texture2D>(BulletTypeResolver.GetBulletTexturePath(BulletType));
+		_weaponSprite = GetNode<Sprite2D>("Sprite");
+        _weaponSprite.Texture = _weaponTexture;
+        _firingCooldownMaxVal = 1.0f / FireRatePerSecond;
 	}
 
 	public override void _Process(double delta)
@@ -29,8 +58,11 @@ public partial class BaseWeapon : Area2D
 			return;
         }
 
-        if (Input.IsActionJustPressed("ShootWeapon"))
+		_firingCooldown += (float)delta;
+
+        if (Input.IsActionPressed("ShootWeapon") && _firingCooldown >= _firingCooldownMaxVal)
 		{
+			_firingCooldown = 0.0f;
 			SpawnBullet();
 		}
 	}
@@ -38,8 +70,8 @@ public partial class BaseWeapon : Area2D
 	private void SpawnBullet()
 	{
 		var bullet = BulletTypeResolver.InstantiateBullet(_bulletScene, BulletType);
-		bullet.GlobalPosition = GlobalPosition; // weapons will have bullet spawn points set manually, based on the texture etc.
-		bullet.Initialize(Vector2.Right, BulletSpeed, BulletTexture);
+		bullet.GlobalPosition = GlobalPosition + BulletSpawnOffset;
+		bullet.Initialize(Vector2.Right, BulletSpeed, _bulletTexture);
 		GetTree().Root.AddChild(bullet);
 	}
 }

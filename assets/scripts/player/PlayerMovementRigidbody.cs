@@ -1,5 +1,6 @@
 using Godot;
 using GunGame.assets.scripts;
+using GunGame.assets.scripts.weapon;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,9 +15,9 @@ public partial class PlayerMovementRigidbody : RigidBody2D
     private AnimatedSprite2D _playerAnimation;
     private CollisionShape2D _playerHitbox;
     private Area2D _pickupDetector;
-    private List<Area2D> _pickupList = new();
-    private Area2D _closestObject = null;
-    private Area2D _heldObject = null;
+    private List<IHoldableItem> _pickupList = new();
+    private IHoldableItem _closestPickableItem = null;
+    private IHoldableItem _heldObject = null;
 
     private bool _isGrounded = false;
 
@@ -34,53 +35,12 @@ public partial class PlayerMovementRigidbody : RigidBody2D
 
         _pickupDetector = GetNode<Area2D>("PickupArea");
         _pickupDetector.CollisionMask = 6;
-        _pickupDetector.AreaEntered += OnPickupRangeBodyEntered;
-        _pickupDetector.AreaExited += OnPickupRangeBodyExited;
     }
 
 	public override void _Process(double delta)
 	{
-        if (_pickupList.Any())
-        {
-            FindClosestObjectForPickup();
-
-            if (Input.IsActionJustPressed("PickupItem"))
-            {
-                if (_heldObject != null) {
-                    if (_heldObject is BaseWeapon weapon)
-                    {
-                        weapon.IsHeld = false;
-                    }
-
-                    _heldObject.Reparent(GetOwner());
-                    _heldObject = null;
-                }
-
-                if (_closestObject != null)
-                {
-                    _heldObject = _closestObject;
-                    if (_heldObject is BaseWeapon weapon)
-                    {
-                        weapon.IsHeld = true;
-                    }
-                    _closestObject = null;
-                    _heldObject.Reparent(this);
-                    _heldObject.Position = new Vector2(0.0f, 0.0f);
-                }
-            }
-        }
-
-        if ((LinearVelocity.X > 0.1 || LinearVelocity.X < -0.1) && _isGrounded)
-        {
-            _playerAnimation.Play(AnimationState.walk.ToString());
-            return;
-        }
-        if ((LinearVelocity.Y > 0.1 || LinearVelocity.Y < -0.1) && !_isGrounded)
-        {
-            _playerAnimation.Stop();
-            return;
-        }
-        _playerAnimation.Play(AnimationState.standby.ToString());
+        PickupProcess();        
+        AnimationProcess();
     }
 
     public override void _PhysicsProcess(double delta)
@@ -126,19 +86,64 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         return;
     }
 
-    private void OnPickupRangeBodyEntered(Area2D area)
+    private void PickupProcess()
     {
-        _pickupList.Add(area);
+        FindItemsForPickup();
+
+        if (_pickupList.Any())
+        {
+            FindClosestObjectForPickup();
+
+            if (Input.IsActionJustPressed("PickupItem"))
+            {
+                if (_heldObject != null)
+                {
+                    LeaveItem();
+                }
+
+                if (_closestPickableItem != null)
+                {
+                    _heldObject = _closestPickableItem;
+                    _heldObject.IsHeld = true;
+                    _closestPickableItem = null;
+
+                    if (_heldObject is Node2D node)
+                    {
+                        node.Reparent(this);
+                        node.Position = new Vector2(0.0f, 0.0f);
+                    }
+                }
+            }
+            return;
+        }
+
+        // holding, but nothing is pickable in range
+        if (_heldObject != null)
+        {
+            if (Input.IsActionJustPressed("PickupItem"))
+            {
+                LeaveItem();
+            }
+        }
     }
 
-    private void OnPickupRangeBodyExited(Area2D area)
+    private void LeaveItem()
     {
-        _pickupList.Remove(area);
+        _heldObject.IsHeld = false;
 
-        if (_closestObject == area)
+        if (_heldObject is Node2D node)
         {
-            _closestObject = null;
+            node.Reparent(GetTree().Root);
+            _heldObject = null;
         }
+    }
+
+    private void FindItemsForPickup()
+    {
+        _pickupList = _pickupDetector.GetOverlappingAreas()
+            .Select(a => a as IHoldableItem)
+            .Where(a => !a.IsHeld)
+            .ToList();
     }
 
     private void FindClosestObjectForPickup()
@@ -148,8 +153,23 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         {
             if (item.GlobalPosition.DistanceTo(GlobalPosition) < closestDistance)
             {
-                _closestObject = item;
+                _closestPickableItem = item;
             }
         }
+    }
+
+    private void AnimationProcess()
+    {
+        if ((LinearVelocity.X > 0.1 || LinearVelocity.X < -0.1) && _isGrounded)
+        {
+            _playerAnimation.Play(AnimationState.walk.ToString());
+            return;
+        }
+        if ((LinearVelocity.Y > 0.1 || LinearVelocity.Y < -0.1) && !_isGrounded)
+        {
+            _playerAnimation.Stop();
+            return;
+        }
+        _playerAnimation.Play(AnimationState.standby.ToString());
     }
 }

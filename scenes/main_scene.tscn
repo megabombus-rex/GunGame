@@ -3,7 +3,8 @@
 [ext_resource type="SpriteFrames" uid="uid://c4cvgjgaobnej" path="res://scenes/kernel-animations.tres" id="1_w2twt"]
 [ext_resource type="Texture2D" uid="uid://bxodjufrjmmfa" path="res://assets/sprites/blocks/Blank-texture-64x64.png" id="3_7ykc4"]
 [ext_resource type="Script" uid="uid://knqkviihkbb8" path="res://assets/scripts/player/PlayerMovementRigidbody.cs" id="3_pu3yx"]
-[ext_resource type="Texture2D" uid="uid://benpv0l8ra0sa" path="res://assets/sprites/weapons/Scar-H-32x16.png" id="4_pu3yx"]
+[ext_resource type="PackedScene" uid="uid://dnok71q3gmhvn" path="res://scenes/system/weapon_spawner.tscn" id="4_pu3yx"]
+[ext_resource type="Script" uid="uid://bqtn8hp577gbo" path="res://assets/scripts/system/weapon_spawning/WeaponSpawnerSystem.cs" id="5_gubc5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7ykc4"]
 size = Vector2(64, 64)
@@ -17,14 +18,12 @@ radius = 25.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_gubc5"]
 radius = 61.03278
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_rt2n2"]
-radius = 33.01515
-
 [node name="Root" type="Node2D"]
+position = Vector2(1, 0)
 
 [node name="Ground" type="RigidBody2D" parent="."]
 position = Vector2(519, 388)
-scale = Vector2(5.559995, 1)
+scale = Vector2(15.199995, 1)
 collision_layer = 2
 collision_mask = 7
 gravity_scale = 0.0
@@ -62,26 +61,5 @@ metadata/_edit_group_ = true
 [node name="PickupRange" type="CollisionShape2D" parent="Player/PickupArea"]
 shape = SubResource("CircleShape2D_gubc5")
 
-[node name="Weapon" type="Area2D" parent="."]
-position = Vector2(506, 314)
-collision_layer = 4
-collision_mask = 3
-metadata/_edit_group_ = true
-
-[node name="Sprite" type="Sprite2D" parent="Weapon"]
-texture = ExtResource("4_pu3yx")
-
-[node name="PickupRange" type="CollisionShape2D" parent="Weapon"]
-shape = SubResource("CircleShape2D_rt2n2")
-
-[node name="Weapon2" type="Area2D" parent="."]
-position = Vector2(635, 316)
-collision_layer = 4
-collision_mask = 3
-metadata/_edit_group_ = true
-
-[node name="Sprite" type="Sprite2D" parent="Weapon2"]
-texture = ExtResource("4_pu3yx")
-
-[node name="PickupRange" type="CollisionShape2D" parent="Weapon2"]
-shape = SubResource("CircleShape2D_rt2n2")
+[node name="WeaponSpawner" parent="." instance=ExtResource("4_pu3yx")]
+script = ExtResource("5_gubc5")

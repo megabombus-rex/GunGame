@@ -3,7 +3,7 @@ using GunGame.assets.scripts.weapon;
 using GunGame.assets.scripts.weapon.ammo;
 using System;
 
-public partial class BaseWeapon : Area2D
+public partial class BaseWeapon : Area2D, IHoldableItem
 {
     [Export] public BulletType BulletType = BulletType.Small;
 	[Export] public float BulletSpeed = 100.0f;
@@ -12,7 +12,13 @@ public partial class BaseWeapon : Area2D
 
     public bool IsHeld { get { return _isHeld; } set { _isHeld = value; } }
 
-	private bool _isHeld = false;
+    public string ItemName => _weaponName;
+	public string Description => _weaponDescription;
+
+
+    private string _weaponName = string.Empty;
+	private string _weaponDescription = string.Empty;
+    private bool _isHeld = false;
 	private float _firingCooldown = 0.0f;
 	private float _firingCooldownMaxVal = 1.0f; // this should not be changed
 
@@ -25,6 +31,8 @@ public partial class BaseWeapon : Area2D
 	// this will be called when the weapon is initialized from the outside (weapon spawner eg.)
 	public void Initialize(WeaponStatPreset preset) 
 	{
+		_weaponName = preset.Name;
+		_weaponDescription = preset.Description; 
 		BulletType = preset.BulletType;
 		BulletSpeed = preset.BulletSpeed;
 		FireRatePerSecond = preset.FireRatePerSecond;

@@ -12,6 +12,7 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         walk = 1
     }
 
+    private int _direction = 1;
     private AnimatedSprite2D _playerAnimation;
     private CollisionShape2D _playerHitbox;
     private Area2D _pickupDetector;
@@ -39,14 +40,14 @@ public partial class PlayerMovementRigidbody : RigidBody2D
 
 	public override void _Process(double delta)
 	{
-        PickupProcess();        
+        PickupProcess();
         AnimationProcess();
     }
 
     public override void _PhysicsProcess(double delta)
     {
         CheckGrounded();
-        HandleMovement(delta, LinearVelocity);
+        HandleMovement(delta);
     }
 
     private void CheckGrounded()
@@ -62,12 +63,23 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         _isGrounded = result.Count > 0;
     }
 
-    private void HandleMovement(double delta, Vector2 currentVelocity)
+    private void HandleMovement(double delta)
     {
-        float horizontalInput = Input.GetAxis("ui_left", "ui_right");
+        int horizontalInput = (int)Mathf.Ceil(Input.GetAxis("ui_left", "ui_right"));
 
         if (horizontalInput != 0)
         {
+            if (_direction != horizontalInput)
+            {
+                _direction = horizontalInput;
+                _playerAnimation.FlipH = !_playerAnimation.FlipH;
+
+                if (_heldObject != null)
+                {
+                    _heldObject.FlipItemHorizontally();
+                }
+            }
+
             float targetVelocity = horizontalInput * MaxSpeed;
             float velocityDifference = targetVelocity - LinearVelocity.X;
 
@@ -82,8 +94,16 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         {
             ApplyCentralImpulse(new Vector2(0, JumpForce * Mass));
         }
+    }
 
-        return;
+    private void FlipPlayerScaleHorizontally(int horizontalInput)
+    {
+        if (horizontalInput < 0)
+        {
+            GlobalScale = new Vector2(10.0f, 1.0f);
+            return;
+        }
+        GlobalScale = new Vector2(2.0f, 1.0f);
     }
 
     private void PickupProcess()
@@ -105,6 +125,12 @@ public partial class PlayerMovementRigidbody : RigidBody2D
                 {
                     _heldObject = _closestPickableItem;
                     _heldObject.IsHeld = true;
+
+                    if (_closestPickableItem.HorizontalDirection != _direction)
+                    {
+                        _closestPickableItem.FlipItemHorizontally();
+                    }
+
                     _closestPickableItem = null;
 
                     if (_heldObject is Node2D node)
@@ -160,12 +186,15 @@ public partial class PlayerMovementRigidbody : RigidBody2D
 
     private void AnimationProcess()
     {
-        if ((LinearVelocity.X > 0.1 || LinearVelocity.X < -0.1) && _isGrounded)
+        if (_isGrounded)
         {
-            _playerAnimation.Play(AnimationState.walk.ToString());
-            return;
+            if (Mathf.Abs(LinearVelocity.X) > 0.1) 
+            {
+                _playerAnimation.Play(AnimationState.walk.ToString());
+                return;
+            }
         }
-        if ((LinearVelocity.Y > 0.1 || LinearVelocity.Y < -0.1) && !_isGrounded)
+        if (Mathf.Abs(LinearVelocity.Y) > 0.1 && !_isGrounded)
         {
             _playerAnimation.Stop();
             return;

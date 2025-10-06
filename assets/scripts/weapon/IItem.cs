@@ -4,5 +4,7 @@ namespace GunGame.assets.scripts.weapon
     {
         string ItemName { get; }
         string Description { get; }
+        int HorizontalDirection { get; set; }
+        void FlipItemHorizontally();
     }
 }

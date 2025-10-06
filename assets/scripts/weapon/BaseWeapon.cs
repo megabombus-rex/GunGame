@@ -10,12 +10,14 @@ public partial class BaseWeapon : Area2D, IHoldableItem
 	[Export] public float FireRatePerSecond = 1.0f;
 	[Export] public Vector2 BulletSpawnOffset = new Vector2(0.0f, 0.0f);
 
-    public bool IsHeld { get { return _isHeld; } set { _isHeld = value; } }
+    public bool IsHeld { get => _isHeld; set { _isHeld = value; } }
 
     public string ItemName => _weaponName;
 	public string Description => _weaponDescription;
 
+    public int HorizontalDirection { get => _direction; set { _direction = value; } }
 
+	private int _direction = 1;
     private string _weaponName = string.Empty;
 	private string _weaponDescription = string.Empty;
     private bool _isHeld = false;
@@ -75,11 +77,28 @@ public partial class BaseWeapon : Area2D, IHoldableItem
 		}
 	}
 
-	private void SpawnBullet()
+    public void FlipItemHorizontally()
+    {
+        _direction = -_direction;
+        GlobalScale = new Vector2(GlobalScale.X, (GlobalScale.Y * _direction));
+		GlobalRotationDegrees = Mathf.Ceil(GlobalRotationDegrees + 180.0f);
+    }
+
+    private void SpawnBullet()
 	{
 		var bullet = BulletTypeResolver.InstantiateBullet(_bulletScene, BulletType);
 		bullet.GlobalPosition = GlobalPosition + BulletSpawnOffset;
-		bullet.Initialize(Vector2.Right, BulletSpeed, _bulletTexture);
+		bullet.Initialize(GetDirectionVector(_direction), BulletSpeed, _bulletTexture);
 		GetTree().Root.AddChild(bullet);
+	}
+
+	private Vector2 GetDirectionVector(int direction)
+	{
+		return direction switch
+		{
+			-1 => Vector2.Left,
+			1 => Vector2.Right,
+			_ => Vector2.Zero
+		};
 	}
 }

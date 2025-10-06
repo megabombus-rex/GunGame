@@ -65,7 +65,7 @@ public partial class PlayerMovementRigidbody : RigidBody2D
 
     private void HandleMovement(double delta)
     {
-        int horizontalInput = (int)Mathf.Ceil(Input.GetAxis("ui_left", "ui_right"));
+        int horizontalInput = (int)Mathf.Ceil(Input.GetAxis("go_left", "go_right"));
 
         if (horizontalInput != 0)
         {
@@ -90,20 +90,10 @@ public partial class PlayerMovementRigidbody : RigidBody2D
             }
         }
 
-        if (Input.IsActionJustPressed("ui_up") && _isGrounded)
+        if (Input.IsActionJustPressed("jump") && _isGrounded)
         {
             ApplyCentralImpulse(new Vector2(0, JumpForce * Mass));
         }
-    }
-
-    private void FlipPlayerScaleHorizontally(int horizontalInput)
-    {
-        if (horizontalInput < 0)
-        {
-            GlobalScale = new Vector2(10.0f, 1.0f);
-            return;
-        }
-        GlobalScale = new Vector2(2.0f, 1.0f);
     }
 
     private void PickupProcess()
@@ -194,10 +184,13 @@ public partial class PlayerMovementRigidbody : RigidBody2D
                 return;
             }
         }
-        if (Mathf.Abs(LinearVelocity.Y) > 0.1 && !_isGrounded)
+        else
         {
-            _playerAnimation.Stop();
-            return;
+            if (Mathf.Abs(LinearVelocity.Y) > 0.1)
+            {
+                _playerAnimation.Stop();
+                return;
+            }
         }
         _playerAnimation.Play(AnimationState.standby.ToString());
     }

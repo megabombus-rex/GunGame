@@ -1,21 +1,12 @@
-[gd_scene load_steps=9 format=3 uid="uid://13hh6g4xgxgd"]
+[gd_scene load_steps=6 format=3 uid="uid://13hh6g4xgxgd"]
 
-[ext_resource type="SpriteFrames" uid="uid://c4cvgjgaobnej" path="res://scenes/kernel-animations.tres" id="1_w2twt"]
+[ext_resource type="PackedScene" uid="uid://bm5803b2mr644" path="res://scenes/player/player.tscn" id="2_pu3yx"]
 [ext_resource type="Texture2D" uid="uid://bxodjufrjmmfa" path="res://assets/sprites/blocks/Blank-texture-64x64.png" id="3_7ykc4"]
-[ext_resource type="Script" uid="uid://knqkviihkbb8" path="res://assets/scripts/player/PlayerMovementRigidbody.cs" id="3_pu3yx"]
 [ext_resource type="PackedScene" uid="uid://dnok71q3gmhvn" path="res://scenes/system/weapon_spawner.tscn" id="4_pu3yx"]
+[ext_resource type="Script" uid="uid://ch5pp528o0o6m" path="res://assets/scripts/system/player_management/PlayerManager.cs" id="5_gubc5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7ykc4"]
 size = Vector2(64, 64)
-
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_pw63i"]
-friction = 0.3
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_w2twt"]
-radius = 25.0
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_gubc5"]
-radius = 61.03278
 
 [node name="Root" type="Node2D"]
 position = Vector2(1, 0)
@@ -36,30 +27,10 @@ texture = ExtResource("3_7ykc4")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 shape = SubResource("RectangleShape2D_7ykc4")
 
-[node name="Player" type="RigidBody2D" parent="."]
+[node name="Player" parent="." instance=ExtResource("2_pu3yx")]
 position = Vector2(380, 286)
-collision_mask = 2
-physics_material_override = SubResource("PhysicsMaterial_pw63i")
-lock_rotation = true
-script = ExtResource("3_pu3yx")
-MaxSpeed = 5000
-Acceleration = 10.0
-metadata/_edit_group_ = true
-
-[node name="PlayerAnimation" type="AnimatedSprite2D" parent="Player"]
-sprite_frames = ExtResource("1_w2twt")
-animation = &"standby"
-
-[node name="Hitbox" type="CollisionShape2D" parent="Player"]
-position = Vector2(0, 5)
-shape = SubResource("CircleShape2D_w2twt")
-
-[node name="PickupArea" type="Area2D" parent="Player"]
-position = Vector2(0, 5)
-collision_mask = 6
-metadata/_edit_group_ = true
-
-[node name="PickupRange" type="CollisionShape2D" parent="Player/PickupArea"]
-shape = SubResource("CircleShape2D_gubc5")
 
 [node name="WeaponSpawner" parent="." instance=ExtResource("4_pu3yx")]
+
+[node name="PlayerManager" type="Node2D" parent="."]
+script = ExtResource("5_gubc5")

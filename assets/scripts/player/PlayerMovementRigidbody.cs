@@ -1,5 +1,7 @@
 using Godot;
 using GunGame.assets.scripts;
+using GunGame.assets.scripts.misc;
+using GunGame.assets.scripts.system.player_management;
 using GunGame.assets.scripts.weapon;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +22,13 @@ public partial class PlayerMovementRigidbody : RigidBody2D
     private IHoldableItem _closestPickableItem = null;
     private IHoldableItem _heldObject = null;
 
+    private int _number;
+    private int _deviceId;
+    private string _jumpCommand = "p1_jump";
+    private string _moveLeftCommand = "p1_left";
+    private string _moveRightCommand = "p1_right";
+    private string _pickUpCommand = "p1_pickup";
+
     private bool _isGrounded = false;
 
     [Export] public int MaxSpeed { get; set; } = 40000;
@@ -36,6 +45,31 @@ public partial class PlayerMovementRigidbody : RigidBody2D
 
         _pickupDetector = GetNode<Area2D>("PickupArea");
         _pickupDetector.CollisionMask = 6;
+    }
+
+    public void Initialize(PlayerPreset preset)
+    {
+        _jumpCommand = preset.MovementMapping.JumpCommand;
+        _moveLeftCommand = preset.MovementMapping.MoveLeftCommand;
+        _moveRightCommand = preset.MovementMapping.MoveRightCommand;
+        _pickUpCommand = preset.MovementMapping.PickUpItemCommand;
+
+        MaxSpeed = preset.Stats.MaxSpeed;
+        Acceleration = preset.Stats.Acceleration;
+        JumpForce = preset.Stats.JumpForce;
+        Mass = preset.Stats.Mass;
+
+        if (_playerAnimation == null)
+        {
+            _playerAnimation = GetNode<AnimatedSprite2D>("PlayerAnimation");
+            _playerAnimation.SpriteFrames = GD.Load<SpriteFrames>(preset.DisplayAndPhysics.AnimationResoucrePath);
+        }
+
+        if (_playerHitbox == null)
+        {
+            _playerHitbox = GetNode<CollisionShape2D>("Hitbox");
+            _playerHitbox.Shape = ShapeCreator.GetShapeBasedOnShapeType(preset.DisplayAndPhysics.ShapeType, preset.DisplayAndPhysics.ShapeDetails);
+        }
     }
 
 	public override void _Process(double delta)

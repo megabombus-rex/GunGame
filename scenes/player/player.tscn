@@ -1,0 +1,38 @@
+[gd_scene load_steps=6 format=3 uid="uid://bm5803b2mr644"]
+
+[ext_resource type="Script" uid="uid://knqkviihkbb8" path="res://assets/scripts/player/PlayerMovementRigidbody.cs" id="1_dovo2"]
+[ext_resource type="SpriteFrames" uid="uid://c4cvgjgaobnej" path="res://scenes/kernel-animations.tres" id="2_gmlin"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_pw63i"]
+friction = 0.3
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_w2twt"]
+radius = 25.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_gubc5"]
+radius = 61.03278
+
+[node name="Player" type="RigidBody2D"]
+collision_mask = 2
+physics_material_override = SubResource("PhysicsMaterial_pw63i")
+lock_rotation = true
+script = ExtResource("1_dovo2")
+MaxSpeed = 5000
+Acceleration = 10.0
+metadata/_edit_group_ = true
+
+[node name="PlayerAnimation" type="AnimatedSprite2D" parent="."]
+sprite_frames = ExtResource("2_gmlin")
+animation = &"standby"
+
+[node name="Hitbox" type="CollisionShape2D" parent="."]
+position = Vector2(0, 5)
+shape = SubResource("CircleShape2D_w2twt")
+
+[node name="PickupArea" type="Area2D" parent="."]
+position = Vector2(0, 5)
+collision_mask = 6
+metadata/_edit_group_ = true
+
+[node name="PickupRange" type="CollisionShape2D" parent="PickupArea"]
+shape = SubResource("CircleShape2D_gubc5")

@@ -40,6 +40,8 @@ public partial class PlayerMovementRigidbody : RigidBody2D
 
     public override void _Ready()
     {
+        GD.Print("Player ready.");
+
         _playerAnimation = GetNode<AnimatedSprite2D>("PlayerAnimation");
         _playerHitbox = GetNode<CollisionShape2D>("Hitbox");
 
@@ -59,17 +61,23 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         JumpForce = preset.Stats.JumpForce;
         Mass = preset.Stats.Mass;
 
+        _number = preset.PlayerNumber;
+
         if (_playerAnimation == null)
         {
+            GD.Print("Setting animation.");
             _playerAnimation = GetNode<AnimatedSprite2D>("PlayerAnimation");
-            _playerAnimation.SpriteFrames = GD.Load<SpriteFrames>(preset.DisplayAndPhysics.AnimationResoucrePath);
         }
+        _playerAnimation.SpriteFrames = GD.Load<SpriteFrames>(preset.DisplayAndPhysics.AnimationResoucrePath);
 
         if (_playerHitbox == null)
         {
+            GD.Print("Setting Hitbox.");
             _playerHitbox = GetNode<CollisionShape2D>("Hitbox");
-            _playerHitbox.Shape = ShapeCreator.GetShapeBasedOnShapeType(preset.DisplayAndPhysics.ShapeType, preset.DisplayAndPhysics.ShapeDetails);
         }
+        _playerHitbox.Shape = ShapeCreator.GetShapeBasedOnShapeType(preset.DisplayAndPhysics.ShapeType, preset.DisplayAndPhysics.ShapeDetails);
+
+        GD.Print($"Instantinated player: {_number}, with texture: {_playerAnimation.SpriteFrames.ResourcePath}, with shape: {_playerHitbox.Shape}");
     }
 
 	public override void _Process(double delta)
@@ -99,7 +107,7 @@ public partial class PlayerMovementRigidbody : RigidBody2D
 
     private void HandleMovement(double delta)
     {
-        int horizontalInput = (int)Mathf.Ceil(Input.GetAxis("go_left", "go_right"));
+        int horizontalInput = (int)Mathf.Ceil(Input.GetAxis(_moveLeftCommand, _moveRightCommand));
 
         if (horizontalInput != 0)
         {
@@ -124,7 +132,7 @@ public partial class PlayerMovementRigidbody : RigidBody2D
             }
         }
 
-        if (Input.IsActionJustPressed("jump") && _isGrounded)
+        if (Input.IsActionJustPressed(_jumpCommand) && _isGrounded)
         {
             ApplyCentralImpulse(new Vector2(0, JumpForce * Mass));
         }
@@ -138,7 +146,7 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         {
             FindClosestObjectForPickup();
 
-            if (Input.IsActionJustPressed("PickupItem"))
+            if (Input.IsActionJustPressed(_pickUpCommand))
             {
                 if (_heldObject != null)
                 {
@@ -170,7 +178,7 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         // holding, but nothing is pickable in range
         if (_heldObject != null)
         {
-            if (Input.IsActionJustPressed("PickupItem"))
+            if (Input.IsActionJustPressed(_jumpCommand))
             {
                 LeaveItem();
             }

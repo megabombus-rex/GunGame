@@ -1,6 +1,5 @@
-[gd_scene load_steps=6 format=3 uid="uid://13hh6g4xgxgd"]
+[gd_scene load_steps=5 format=3 uid="uid://13hh6g4xgxgd"]
 
-[ext_resource type="PackedScene" uid="uid://bm5803b2mr644" path="res://scenes/player/player.tscn" id="2_pu3yx"]
 [ext_resource type="Texture2D" uid="uid://bxodjufrjmmfa" path="res://assets/sprites/blocks/Blank-texture-64x64.png" id="3_7ykc4"]
 [ext_resource type="PackedScene" uid="uid://dnok71q3gmhvn" path="res://scenes/system/weapon_spawner.tscn" id="4_pu3yx"]
 [ext_resource type="Script" uid="uid://ch5pp528o0o6m" path="res://assets/scripts/system/player_management/PlayerManager.cs" id="5_gubc5"]
@@ -26,9 +25,6 @@ texture = ExtResource("3_7ykc4")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 shape = SubResource("RectangleShape2D_7ykc4")
-
-[node name="Player" parent="." instance=ExtResource("2_pu3yx")]
-position = Vector2(380, 286)
 
 [node name="WeaponSpawner" parent="." instance=ExtResource("4_pu3yx")]
 

@@ -36,10 +36,14 @@ public partial class PlayerManager : Node2D
                 {
                     MovementMapping = movement,
                     DisplayAndPhysics = display,
-                    Stats = stats
+                    Stats = stats,
+                    PlayerNumber = _currentIndex + 1,
                 };
 
                 player.Initialize(preset);
+                player.GlobalPosition = new Vector2(500.0f, 200.0f);
+
+                GetTree().Root.AddChild(player);
                 _currentIndex++;
             }
         }
@@ -47,6 +51,8 @@ public partial class PlayerManager : Node2D
         {
             if (_presentPlayersList.Count > 0)
             {
+                GD.Print($"Clearing player on index: {_currentIndex}");
+                _presentPlayersList[_currentIndex].QueueFree();
                 _presentPlayersList.RemoveAt(_currentIndex);
                 _currentIndex--;
             }

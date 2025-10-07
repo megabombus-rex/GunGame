@@ -3,6 +3,7 @@ using GunGame.assets.scripts;
 using GunGame.assets.scripts.misc;
 using GunGame.assets.scripts.system.player_management;
 using GunGame.assets.scripts.weapon;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,6 +29,7 @@ public partial class PlayerMovementRigidbody : RigidBody2D
     private string _moveLeftCommand = "p1_left";
     private string _moveRightCommand = "p1_right";
     private string _pickUpCommand = "p1_pickup";
+    private string _useItemCommand = "p1_useItem";
 
     private bool _isGrounded = false;
 
@@ -55,6 +57,7 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         _moveLeftCommand = preset.MovementMapping.MoveLeftCommand;
         _moveRightCommand = preset.MovementMapping.MoveRightCommand;
         _pickUpCommand = preset.MovementMapping.PickUpItemCommand;
+        _useItemCommand = preset.MovementMapping.UseItemCommand;
 
         MaxSpeed = preset.Stats.MaxSpeed;
         Acceleration = preset.Stats.Acceleration;
@@ -83,7 +86,15 @@ public partial class PlayerMovementRigidbody : RigidBody2D
 	public override void _Process(double delta)
 	{
         PickupProcess();
+        ShootingProcess();
         AnimationProcess();
+    }
+
+    private void ShootingProcess()
+    {
+        if (_heldObject == null) return;
+
+        _heldObject.UseItem(_useItemCommand, _deviceId);
     }
 
     public override void _PhysicsProcess(double delta)
@@ -178,7 +189,7 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         // holding, but nothing is pickable in range
         if (_heldObject != null)
         {
-            if (Input.IsActionJustPressed(_jumpCommand))
+            if (Input.IsActionJustPressed(_pickUpCommand))
             {
                 LeaveItem();
             }

@@ -44,6 +44,7 @@ public partial class PlayerManager : Node2D
                 player.GlobalPosition = new Vector2(500.0f, 200.0f);
 
                 GetTree().Root.AddChild(player);
+                _presentPlayersList.Add(player);
                 _currentIndex++;
             }
         }
@@ -52,9 +53,9 @@ public partial class PlayerManager : Node2D
             if (_presentPlayersList.Count > 0)
             {
                 GD.Print($"Clearing player on index: {_currentIndex}");
+                _currentIndex--;
                 _presentPlayersList[_currentIndex].QueueFree();
                 _presentPlayersList.RemoveAt(_currentIndex);
-                _currentIndex--;
             }
         }
     }
@@ -68,7 +69,8 @@ public partial class PlayerManager : Node2D
                 JumpCommand = "p1_jump",
                 MoveLeftCommand = "p1_left",
                 MoveRightCommand = "p1_right",
-                PickUpItemCommand = "p1_pickup"
+                PickUpItemCommand = "p1_pickup",
+                UseItemCommand = "p1_shoot_weapon"
             }
         },
         { 1, new PlayerMovementMapping()
@@ -77,25 +79,28 @@ public partial class PlayerManager : Node2D
                 JumpCommand = "p2_jump",
                 MoveLeftCommand = "p2_left",
                 MoveRightCommand = "p2_right",
-                PickUpItemCommand = "p2_pickup"
+                PickUpItemCommand = "p2_pickup",
+                UseItemCommand = "p2_shoot_weapon"
             }
         },
-        { 2, new PlayerMovementMapping()
+        { 2, new PlayerMovementMapping() // joypad mapping not added yet
             {
                 DeviceId = 1,
                 JumpCommand = "joypad_jump",
                 MoveLeftCommand = "joypad_left",
                 MoveRightCommand = "joypad_right",
-                PickUpItemCommand = "joypad_pickup"
+                PickUpItemCommand = "joypad_pickup",
+                UseItemCommand = "joypad_shoot_weapon"
             }
         },
         { 3, new PlayerMovementMapping()
             {
-                DeviceId = 1,
+                DeviceId = 2,
                 JumpCommand = "joypad_jump",
                 MoveLeftCommand = "joypad_left",
                 MoveRightCommand = "joypad_right",
-                PickUpItemCommand = "joypad_pickup"
+                PickUpItemCommand = "joypad_pickup",
+                UseItemCommand = "joypad_shoot_weapon"
             }
         }
     };

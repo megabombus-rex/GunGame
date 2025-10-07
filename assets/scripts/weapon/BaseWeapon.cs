@@ -1,4 +1,5 @@
 using Godot;
+using GunGame.assets.scripts.misc;
 using GunGame.assets.scripts.weapon;
 using GunGame.assets.scripts.weapon.ammo;
 using System;
@@ -68,14 +69,17 @@ public partial class BaseWeapon : Area2D, IHoldableItem
 			return;
         }
 
-		_firingCooldown += (float)delta;
-
-        if (Input.IsActionPressed("ShootWeapon") && _firingCooldown >= _firingCooldownMaxVal)
-		{
-			_firingCooldown = 0.0f;
-			SpawnBullet();
-		}
+		_firingCooldown += (float)delta;        
 	}
+
+    public void UseItem(string actionName, int deviceId)
+    {
+        if (InputWrapper.IsActionPressed(actionName, deviceId) && _firingCooldown >= _firingCooldownMaxVal)
+        {
+            _firingCooldown = 0.0f;
+            SpawnBullet();
+        }
+    }
 
     public void FlipItemHorizontally()
     {

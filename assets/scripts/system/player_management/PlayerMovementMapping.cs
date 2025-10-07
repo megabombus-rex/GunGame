@@ -7,5 +7,6 @@ namespace GunGame.assets.scripts.system.player_management
         public string MoveLeftCommand {  get; set; }
         public string MoveRightCommand {  get; set; }
         public string PickUpItemCommand {  get; set; }
+        public string UseItemCommand {  get; set; }
     }
 }

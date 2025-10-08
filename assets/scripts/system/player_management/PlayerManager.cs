@@ -23,6 +23,7 @@ public partial class PlayerManager : Node2D
     {
         // temporarily like this
         // make this work so given player joins on different button (pickup item or shoot action)
+        // also the spawn points can be fixed based on the map
         if (Input.IsActionJustPressed("Add_player"))
         {
             if (_presentPlayersList.Count < MAX_PLAYER_COUNT)
@@ -52,7 +53,6 @@ public partial class PlayerManager : Node2D
         {
             if (_presentPlayersList.Count > 0)
             {
-                GD.Print($"Clearing player on index: {_currentIndex}");
                 _currentIndex--;
                 _presentPlayersList[_currentIndex].QueueFree();
                 _presentPlayersList.RemoveAt(_currentIndex);
@@ -146,9 +146,9 @@ public partial class PlayerManager : Node2D
             {
                 Mass = 2.0f,
                 MaxSpeed = 30000,
-                Acceleration = 1.5f,
-                JumpForce = -1000.0f,
-                GroundRayLength = 70.0f
+                Acceleration = 1.2f,
+                JumpForce = -600.0f,
+                GroundRayLength = 80.0f
             }
         }
     };

@@ -6,5 +6,6 @@ namespace GunGame.assets.scripts.weapon
         string Description { get; }
         int HorizontalDirection { get; set; }
         void FlipItemHorizontally();
+        void UseItem(string actionName, int deviceId);
     }
 }

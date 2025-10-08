@@ -1,6 +1,9 @@
 using Godot;
 using GunGame.assets.scripts;
+using GunGame.assets.scripts.misc;
+using GunGame.assets.scripts.system.player_management;
 using GunGame.assets.scripts.weapon;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,6 +23,14 @@ public partial class PlayerMovementRigidbody : RigidBody2D
     private IHoldableItem _closestPickableItem = null;
     private IHoldableItem _heldObject = null;
 
+    private int _number;
+    private int _deviceId;
+    private string _jumpCommand = "p1_jump";
+    private string _moveLeftCommand = "p1_left";
+    private string _moveRightCommand = "p1_right";
+    private string _pickUpCommand = "p1_pickup";
+    private string _useItemCommand = "p1_useItem";
+
     private bool _isGrounded = false;
 
     [Export] public int MaxSpeed { get; set; } = 40000;
@@ -31,6 +42,8 @@ public partial class PlayerMovementRigidbody : RigidBody2D
 
     public override void _Ready()
     {
+        GD.Print("Player ready.");
+
         _playerAnimation = GetNode<AnimatedSprite2D>("PlayerAnimation");
         _playerHitbox = GetNode<CollisionShape2D>("Hitbox");
 
@@ -38,10 +51,50 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         _pickupDetector.CollisionMask = 6;
     }
 
+    public void Initialize(PlayerPreset preset)
+    {
+        _jumpCommand = preset.MovementMapping.JumpCommand;
+        _moveLeftCommand = preset.MovementMapping.MoveLeftCommand;
+        _moveRightCommand = preset.MovementMapping.MoveRightCommand;
+        _pickUpCommand = preset.MovementMapping.PickUpItemCommand;
+        _useItemCommand = preset.MovementMapping.UseItemCommand;
+
+        MaxSpeed = preset.Stats.MaxSpeed;
+        Acceleration = preset.Stats.Acceleration;
+        JumpForce = preset.Stats.JumpForce;
+        Mass = preset.Stats.Mass;
+
+        _number = preset.PlayerNumber;
+
+        if (_playerAnimation == null)
+        {
+            GD.Print("Setting animation.");
+            _playerAnimation = GetNode<AnimatedSprite2D>("PlayerAnimation");
+        }
+        _playerAnimation.SpriteFrames = GD.Load<SpriteFrames>(preset.DisplayAndPhysics.AnimationResoucrePath);
+
+        if (_playerHitbox == null)
+        {
+            GD.Print("Setting Hitbox.");
+            _playerHitbox = GetNode<CollisionShape2D>("Hitbox");
+        }
+        _playerHitbox.Shape = ShapeCreator.GetShapeBasedOnShapeType(preset.DisplayAndPhysics.ShapeType, preset.DisplayAndPhysics.ShapeDetails);
+
+        GD.Print($"Instantinated player: {_number}, with texture: {_playerAnimation.SpriteFrames.ResourcePath}, with shape: {_playerHitbox.Shape}");
+    }
+
 	public override void _Process(double delta)
 	{
         PickupProcess();
+        ShootingProcess();
         AnimationProcess();
+    }
+
+    private void ShootingProcess()
+    {
+        if (_heldObject == null) return;
+
+        _heldObject.UseItem(_useItemCommand, _deviceId);
     }
 
     public override void _PhysicsProcess(double delta)
@@ -65,7 +118,7 @@ public partial class PlayerMovementRigidbody : RigidBody2D
 
     private void HandleMovement(double delta)
     {
-        int horizontalInput = (int)Mathf.Ceil(Input.GetAxis("go_left", "go_right"));
+        int horizontalInput = (int)Mathf.Ceil(Input.GetAxis(_moveLeftCommand, _moveRightCommand));
 
         if (horizontalInput != 0)
         {
@@ -90,7 +143,7 @@ public partial class PlayerMovementRigidbody : RigidBody2D
             }
         }
 
-        if (Input.IsActionJustPressed("jump") && _isGrounded)
+        if (Input.IsActionJustPressed(_jumpCommand) && _isGrounded)
         {
             ApplyCentralImpulse(new Vector2(0, JumpForce * Mass));
         }
@@ -104,7 +157,7 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         {
             FindClosestObjectForPickup();
 
-            if (Input.IsActionJustPressed("PickupItem"))
+            if (Input.IsActionJustPressed(_pickUpCommand))
             {
                 if (_heldObject != null)
                 {
@@ -136,7 +189,7 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         // holding, but nothing is pickable in range
         if (_heldObject != null)
         {
-            if (Input.IsActionJustPressed("PickupItem"))
+            if (Input.IsActionJustPressed(_pickUpCommand))
             {
                 LeaveItem();
             }

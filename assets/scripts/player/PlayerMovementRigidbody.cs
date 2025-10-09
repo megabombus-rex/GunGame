@@ -37,8 +37,12 @@ public partial class PlayerMovementRigidbody : RigidBody2D
     [Export] public float Acceleration { get; set; } = 1.0f;
     [Export] public float JumpForce { get; set; } = -400.0f;
 
-
     [Export] public float GroundRayLength { get; set; } = 75.0f; // For ground detection
+
+    // make the health as '%' as in Smash
+    private float _hitpoints = 0.0f;
+
+    private const float HIT_FORCE_MULTIPLIER = 10.0f;
 
     public override void _Ready()
     {
@@ -101,6 +105,13 @@ public partial class PlayerMovementRigidbody : RigidBody2D
     {
         CheckGrounded();
         HandleMovement(delta);
+    }
+
+    public void TakeDamage(float damage, Vector2 direction)
+    {
+        _hitpoints += damage;
+        var force = direction.Normalized() * _hitpoints * HIT_FORCE_MULTIPLIER;
+        ApplyCentralForce(force);
     }
 
     private void CheckGrounded()

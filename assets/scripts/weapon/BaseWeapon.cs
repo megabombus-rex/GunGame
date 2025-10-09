@@ -31,6 +31,8 @@ public partial class BaseWeapon : Area2D, IHoldableItem
 
 	private Sprite2D _weaponSprite;
 
+	private BulletPreset _bulletPreset;
+
 	// this will be called when the weapon is initialized from the outside (weapon spawner eg.)
 	public void Initialize(WeaponStatPreset preset) 
 	{
@@ -42,6 +44,8 @@ public partial class BaseWeapon : Area2D, IHoldableItem
         _firingCooldownMaxVal = 1.0f / FireRatePerSecond;
 
 		BulletSpawnOffset = preset.BulletSpawnOffset;
+
+		_bulletPreset = preset.BulletPreset;
 
         try
 		{
@@ -92,7 +96,12 @@ public partial class BaseWeapon : Area2D, IHoldableItem
 	{
 		var bullet = BulletTypeResolver.InstantiateBullet(_bulletScene, BulletType);
 		bullet.GlobalPosition = GlobalPosition + BulletSpawnOffset;
-		bullet.Initialize(GetDirectionVector(_direction), BulletSpeed, _bulletTexture);
+        //bullet.Initialize(GetDirectionVector(_direction), BulletSpeed, _bulletTexture); 
+        // some guns may shoot not only in just a line so the direction may need some work
+		// eg. shotguns, changed accuracy etc.
+        _bulletPreset.FlightDirection = GetDirectionVector(_direction);
+		bullet.Initialize(_bulletPreset);
+
 		GetTree().Root.AddChild(bullet);
 	}
 

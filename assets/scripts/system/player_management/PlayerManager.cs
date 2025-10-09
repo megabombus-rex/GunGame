@@ -110,7 +110,7 @@ public partial class PlayerManager : Node2D
         { 0, new PlayerDisplayAndPhysics()
             {
                 ShapeType = ShapeType.Circle,
-                ShapeDetails = new System.Numerics.Vector2()
+                ShapeDetails = new Vector2()
                 {
                     X = 25.0f,
                     Y = 25.0f
@@ -121,7 +121,7 @@ public partial class PlayerManager : Node2D
         { 1, new PlayerDisplayAndPhysics()
             {
                 ShapeType = ShapeType.Capsule,
-                ShapeDetails = new System.Numerics.Vector2()
+                ShapeDetails = new Vector2()
                 {
                     X = 20.0f,
                     Y = 35.0f

@@ -1,4 +1,5 @@
 using Godot;
+using GunGame.assets.scripts;
 using GunGame.assets.scripts.misc;
 using GunGame.assets.scripts.weapon.ammo;
 
@@ -26,6 +27,8 @@ public partial class Bullet : Area2D
         {
             _collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
         }
+        this.AreaEntered += CheckIfHit;
+        
     }
 
 	public override void _Process(double delta)
@@ -42,6 +45,9 @@ public partial class Bullet : Area2D
 
     public void Initialize(BulletPreset preset)
     {
+        CollisionLayer = (uint)Constants.CollisionMask.Bullet;
+        CollisionMask = (uint)(Constants.CollisionMask.Platform | Constants.CollisionMask.Player);
+
         _flightDirection = preset.FlightDirection.Normalized();
         Velocity = preset.Velocity;
         VelocityFallPerSecond = preset.VelocityFallPerSecond;
@@ -59,5 +65,14 @@ public partial class Bullet : Area2D
         }
         _collisionShape.Shape = ShapeCreator.GetShapeBasedOnShapeType(preset.SizePreset.ShapeType, preset.SizePreset.ShapeDetails);
         _collisionShape.GlobalRotationDegrees = preset.SizePreset.RotationDegrees;
+    }
+
+    public void CheckIfHit(Area2D collision)
+    {
+        if (collision.GetParent() is PlayerMovementRigidbody rb)
+        {
+            rb.TakeDamage(Velocity, _flightDirection);
+        }
+        QueueFree();
     }
 }

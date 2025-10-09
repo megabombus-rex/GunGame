@@ -7,7 +7,6 @@ using System;
 public partial class BaseWeapon : Area2D, IHoldableItem
 {
     [Export] public BulletType BulletType = BulletType.Small;
-	[Export] public float BulletSpeed = 100.0f;
 	[Export] public float FireRatePerSecond = 1.0f;
 	[Export] public Vector2 BulletSpawnOffset = new Vector2(0.0f, 0.0f);
 
@@ -39,7 +38,6 @@ public partial class BaseWeapon : Area2D, IHoldableItem
 		_weaponName = preset.Name;
 		_weaponDescription = preset.Description; 
 		BulletType = preset.BulletType;
-		BulletSpeed = preset.BulletSpeed;
 		FireRatePerSecond = preset.FireRatePerSecond;
         _firingCooldownMaxVal = 1.0f / FireRatePerSecond;
 
@@ -96,12 +94,11 @@ public partial class BaseWeapon : Area2D, IHoldableItem
 	{
 		var bullet = BulletTypeResolver.InstantiateBullet(_bulletScene, BulletType);
 		bullet.GlobalPosition = GlobalPosition + BulletSpawnOffset;
-        //bullet.Initialize(GetDirectionVector(_direction), BulletSpeed, _bulletTexture); 
-        // some guns may shoot not only in just a line so the direction may need some work
+
+        // some guns may shoot not only in just a line so the direction will need some work if/when implemented
 		// eg. shotguns, changed accuracy etc.
         _bulletPreset.FlightDirection = GetDirectionVector(_direction);
 		bullet.Initialize(_bulletPreset);
-
 		GetTree().Root.AddChild(bullet);
 	}
 

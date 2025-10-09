@@ -38,7 +38,8 @@ namespace GunGame.assets.scripts.system.weapon_spawning.strategies
                         Velocity = 100.0f,
                         VelocityFallPerSecond = 5.0f,
                         LifetimeInSeconds = 5.0f,
-                        TexturePath = "res://assets/sprites/weapon/ammo/Bullet-S_64x64.png"
+                        TexturePath = "res://assets/sprites/weapon/ammo/Bullet-S_64x64.png",
+                        SizePreset = BulletTypeResolver.GetBulletColliderDetails(BulletType.Small)
                     }
                 }
             },
@@ -58,7 +59,8 @@ namespace GunGame.assets.scripts.system.weapon_spawning.strategies
                         Velocity = 100.0f,
                         VelocityFallPerSecond = 5.0f,
                         LifetimeInSeconds = 5.0f,
-                        TexturePath = "res://assets/sprites/weapon/ammo/Bullet-S_64x64.png"
+                        TexturePath = "res://assets/sprites/weapon/ammo/Bullet-S_64x64.png",
+                        SizePreset = BulletTypeResolver.GetBulletColliderDetails(BulletType.Small)
                     }
                 }
             },
@@ -78,7 +80,8 @@ namespace GunGame.assets.scripts.system.weapon_spawning.strategies
                         Velocity = 100.0f,
                         VelocityFallPerSecond = 5.0f,
                         LifetimeInSeconds = 5.0f,
-                        TexturePath = "res://assets/sprites/weapon/ammo/Bullet-M_64x64.png"
+                        TexturePath = "res://assets/sprites/weapon/ammo/Bullet-M_64x64.png",
+                        SizePreset = BulletTypeResolver.GetBulletColliderDetails(BulletType.Medium)
                     }
                 }
             },

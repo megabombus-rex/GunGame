@@ -1,4 +1,5 @@
 using Godot;
+using GunGame.assets.scripts.misc;
 using GunGame.assets.scripts.weapon.ammo;
 
 public partial class Bullet : Area2D
@@ -8,16 +9,22 @@ public partial class Bullet : Area2D
     [Export] public float VelocityFallPerSecond = 1.0f;
     [Export] public float BulletLifetimeInSeconds = 5.0f;
 
-    [Export] public Sprite2D BulletSprite;
+    private Sprite2D _bulletSprite;
+
+    private CollisionShape2D _collisionShape;
 
     private Vector2 _flightDirection = Vector2.Right;
     private float _currentLifetime = 0.0f;
 
 	public override void _Ready()
 	{
-        if (BulletSprite != null)
+        if (_bulletSprite == null)
         {
-            BulletSprite = GetNode<Sprite2D>("Sprite2D");
+            _bulletSprite = GetNode<Sprite2D>("Sprite2D");
+        }
+        if (_collisionShape == null)
+        {
+            _collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
         }
     }
 
@@ -33,17 +40,6 @@ public partial class Bullet : Area2D
         }
     }
 
-    public void Initialize(Vector2 dir, float speed, Texture2D texture = null)
-    {
-        _flightDirection = dir.Normalized();
-        Velocity = speed;
-
-        if (texture != null)
-        {
-            GetNode<Sprite2D>("Sprite2D").Texture = texture;
-        }
-    }
-
     public void Initialize(BulletPreset preset)
     {
         _flightDirection = preset.FlightDirection.Normalized();
@@ -51,10 +47,17 @@ public partial class Bullet : Area2D
         VelocityFallPerSecond = preset.VelocityFallPerSecond;
         BulletLifetimeInSeconds = preset.LifetimeInSeconds;
 
-        if (BulletSprite == null)
+        if (_bulletSprite == null)
         {
-            BulletSprite = GetNode<Sprite2D>("Sprite2D");
+            _bulletSprite = GetNode<Sprite2D>("Sprite2D");
         }
-        BulletSprite.Texture = GD.Load<Texture2D>(preset.TexturePath);
+        _bulletSprite.Texture = GD.Load<Texture2D>(preset.TexturePath);
+
+        if (_collisionShape == null)
+        {
+            _collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
+        }
+        _collisionShape.Shape = ShapeCreator.GetShapeBasedOnShapeType(preset.SizePreset.ShapeType, preset.SizePreset.ShapeDetails);
+        _collisionShape.GlobalRotationDegrees = preset.SizePreset.RotationDegrees;
     }
 }

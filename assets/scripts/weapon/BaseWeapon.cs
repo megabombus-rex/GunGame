@@ -98,9 +98,13 @@ public partial class BaseWeapon : Area2D, IHoldableItem
         // some guns may shoot not only in just a line so the direction will need some work if/when implemented
 		// eg. shotguns, changed accuracy etc.
         _bulletPreset.FlightDirection = GetDirectionVector(_direction);
-		bullet.Initialize(_bulletPreset);
-		GetTree().Root.AddChild(bullet);
-	}
+
+		if (GetParent() is PlayerMovementRigidbody player)
+		{
+            bullet.Initialize(_bulletPreset, player.PlayerId);
+            GetTree().Root.AddChild(bullet);
+        }
+    }
 
 	private Vector2 GetDirectionVector(int direction)
 	{

@@ -16,6 +16,7 @@ public partial class Bullet : Area2D
 
     private Vector2 _flightDirection = Vector2.Right;
     private float _currentLifetime = 0.0f;
+    private int _shootingPlayerId = 0;
 
 	public override void _Ready()
 	{
@@ -43,8 +44,9 @@ public partial class Bullet : Area2D
         }
     }
 
-    public void Initialize(BulletPreset preset)
+    public void Initialize(BulletPreset preset, int playerId)
     {
+        _shootingPlayerId = playerId;
         CollisionLayer = (uint)Constants.CollisionMask.Bullet;
         CollisionMask = (uint)(Constants.CollisionMask.Platform | Constants.CollisionMask.Player);
 
@@ -71,6 +73,10 @@ public partial class Bullet : Area2D
     {
         if (collision.GetParent() is PlayerMovementRigidbody rb)
         {
+            if (rb.PlayerId == _shootingPlayerId)
+            {
+                return;
+            }
             rb.TakeDamage(Velocity, _flightDirection);
         }
         QueueFree();

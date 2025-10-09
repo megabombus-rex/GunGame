@@ -24,6 +24,8 @@ public partial class PlayerMovementRigidbody : RigidBody2D
     private IHoldableItem _closestPickableItem = null;
     private IHoldableItem _heldObject = null;
 
+    public int PlayerId { get { return _number; } }
+
     private int _number;
     private int _deviceId;
     private string _jumpCommand = "p1_jump";

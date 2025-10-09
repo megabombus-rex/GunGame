@@ -45,7 +45,7 @@ public partial class PlayerMovementRigidbody : RigidBody2D
     // make the health as '%' as in Smash
     private float _hitpoints = 0.0f;
 
-    private const float HIT_FORCE_MULTIPLIER = 10.0f;
+    private const float HIT_FORCE_MULTIPLIER = 5.0f;
 
     public override void _Ready()
     {
@@ -120,7 +120,7 @@ public partial class PlayerMovementRigidbody : RigidBody2D
     {
         _hitpoints += damage;
         var force = direction.Normalized() * _hitpoints * HIT_FORCE_MULTIPLIER;
-        ApplyCentralForce(force);
+        ApplyCentralImpulse(force);
     }
 
     private void CheckGrounded()

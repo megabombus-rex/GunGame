@@ -115,7 +115,7 @@ public partial class PlayerManager : Node2D
                     X = 25.0f,
                     Y = 25.0f
                 },
-                AnimationResoucrePath = "res://scenes/kernel-animations.tres"
+                AnimationResoucrePath = "res://assets/animations/character/kernel-animations.tres"
             }
         },
         { 1, new PlayerDisplayAndPhysics()
@@ -126,7 +126,7 @@ public partial class PlayerManager : Node2D
                     X = 20.0f,
                     Y = 35.0f
                 },
-                AnimationResoucrePath = "res://scenes/kernel-animations.tres"
+                AnimationResoucrePath = "res://assets/animations/character/donut-man-animations.tres"
             }
         }
     };

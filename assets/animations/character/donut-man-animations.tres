@@ -1,0 +1,59 @@
+[gd_resource type="SpriteFrames" load_steps=9 format=3 uid="uid://gfck8lkiqc4q"]
+
+[ext_resource type="Texture2D" uid="uid://cmpc013ypnoao" path="res://assets/sprites/character/donut-man/Donut-man-standby_64x64.png" id="1_2yeuw"]
+[ext_resource type="Texture2D" uid="uid://6mad2ofvhrr0" path="res://assets/sprites/character/donut-man/Donut-man-walking_64x64.png" id="2_oaq4a"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_crv4w"]
+atlas = ExtResource("1_2yeuw")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1f8an"]
+atlas = ExtResource("1_2yeuw")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ovtu4"]
+atlas = ExtResource("2_oaq4a")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3fnug"]
+atlas = ExtResource("2_oaq4a")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v1dip"]
+atlas = ExtResource("2_oaq4a")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rk601"]
+atlas = ExtResource("2_oaq4a")
+region = Rect2(192, 0, 64, 64)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_crv4w")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1f8an")
+}],
+"loop": true,
+"name": &"standby",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ovtu4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3fnug")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v1dip")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rk601")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 5.0
+}]

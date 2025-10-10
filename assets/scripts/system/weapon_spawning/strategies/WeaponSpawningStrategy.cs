@@ -1,5 +1,6 @@
 using Godot;
 using GunGame.assets.scripts.weapon;
+using GunGame.assets.scripts.weapon.ammo;
 using System;
 using System.Collections.Generic;
 
@@ -27,9 +28,20 @@ namespace GunGame.assets.scripts.system.weapon_spawning.strategies
                     Description = "Most famous assault rifle in the world.",
                     BulletSpawnOffset = Vector2.Zero,
                     BulletSpeed = 200.0f,
-                    BulletType = GunGame.assets.scripts.weapon.ammo.BulletType.Small,
+                    BulletType = BulletType.Small,
                     FireRatePerSecond = 1.5f,
-                    TexturePath = "res://assets/sprites/weapon/AK-47-16x16.png" }
+                    TexturePath = "res://assets/sprites/weapon/AK-47-16x16.png",
+                    BulletPreset = new BulletPreset()
+                    {
+                        Damage = 10.0f,
+                        FlightDirection = Vector2.Right,
+                        Velocity = 100.0f,
+                        VelocityFallPerSecond = 5.0f,
+                        LifetimeInSeconds = 5.0f,
+                        TexturePath = "res://assets/sprites/weapon/ammo/Bullet-S_64x64.png",
+                        SizePreset = BulletTypeResolver.GetBulletColliderDetails(BulletType.Small)
+                    }
+                }
             },
             { WeaponType.SCAR_H,
                 new WeaponStatPreset() {
@@ -37,9 +49,20 @@ namespace GunGame.assets.scripts.system.weapon_spawning.strategies
                     Description = "This american s...",
                     BulletSpawnOffset = new Vector2(5.0f, 1.0f),
                     BulletSpeed = 200.0f,
-                    BulletType = GunGame.assets.scripts.weapon.ammo.BulletType.Small,
+                    BulletType = BulletType.Small,
                     FireRatePerSecond = 1.5f,
-                    TexturePath = "res://assets/sprites/weapon/Scar-H-32x16.png" }
+                    TexturePath = "res://assets/sprites/weapon/Scar-H-32x16.png",
+                    BulletPreset = new BulletPreset()
+                    {
+                        Damage = 10.0f,
+                        FlightDirection = Vector2.Right,
+                        Velocity = 100.0f,
+                        VelocityFallPerSecond = 5.0f,
+                        LifetimeInSeconds = 5.0f,
+                        TexturePath = "res://assets/sprites/weapon/ammo/Bullet-S_64x64.png",
+                        SizePreset = BulletTypeResolver.GetBulletColliderDetails(BulletType.Small)
+                    }
+                }
             },
             { WeaponType.M1_GARAND,
                 new WeaponStatPreset() {
@@ -47,9 +70,20 @@ namespace GunGame.assets.scripts.system.weapon_spawning.strategies
                     Description = "Semi-automatic!",
                     BulletSpawnOffset = new Vector2(10.0f, 2.0f),
                     BulletSpeed = 250.0f,
-                    BulletType = GunGame.assets.scripts.weapon.ammo.BulletType.Medium,
+                    BulletType = BulletType.Medium,
                     FireRatePerSecond = 1.0f,
-                    TexturePath = "res://assets/sprites/weapon/M1-Garand-16x16.png" }
+                    TexturePath = "res://assets/sprites/weapon/M1-Garand-16x16.png",
+                    BulletPreset = new BulletPreset()
+                    {
+                        Damage = 25.0f,
+                        FlightDirection = Vector2.Right,
+                        Velocity = 100.0f,
+                        VelocityFallPerSecond = 5.0f,
+                        LifetimeInSeconds = 5.0f,
+                        TexturePath = "res://assets/sprites/weapon/ammo/Bullet-M_64x64.png",
+                        SizePreset = BulletTypeResolver.GetBulletColliderDetails(BulletType.Medium)
+                    }
+                }
             },
         };
     }

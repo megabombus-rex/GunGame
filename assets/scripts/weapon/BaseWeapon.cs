@@ -7,7 +7,6 @@ using System;
 public partial class BaseWeapon : Area2D, IHoldableItem
 {
     [Export] public BulletType BulletType = BulletType.Small;
-	[Export] public float BulletSpeed = 100.0f;
 	[Export] public float FireRatePerSecond = 1.0f;
 	[Export] public Vector2 BulletSpawnOffset = new Vector2(0.0f, 0.0f);
 
@@ -31,17 +30,20 @@ public partial class BaseWeapon : Area2D, IHoldableItem
 
 	private Sprite2D _weaponSprite;
 
+	private BulletPreset _bulletPreset;
+
 	// this will be called when the weapon is initialized from the outside (weapon spawner eg.)
 	public void Initialize(WeaponStatPreset preset) 
 	{
 		_weaponName = preset.Name;
 		_weaponDescription = preset.Description; 
 		BulletType = preset.BulletType;
-		BulletSpeed = preset.BulletSpeed;
 		FireRatePerSecond = preset.FireRatePerSecond;
         _firingCooldownMaxVal = 1.0f / FireRatePerSecond;
 
 		BulletSpawnOffset = preset.BulletSpawnOffset;
+
+		_bulletPreset = preset.BulletPreset;
 
         try
 		{
@@ -92,9 +94,17 @@ public partial class BaseWeapon : Area2D, IHoldableItem
 	{
 		var bullet = BulletTypeResolver.InstantiateBullet(_bulletScene, BulletType);
 		bullet.GlobalPosition = GlobalPosition + BulletSpawnOffset;
-		bullet.Initialize(GetDirectionVector(_direction), BulletSpeed, _bulletTexture);
-		GetTree().Root.AddChild(bullet);
-	}
+
+        // some guns may shoot not only in just a line so the direction will need some work if/when implemented
+		// eg. shotguns, changed accuracy etc.
+        _bulletPreset.FlightDirection = GetDirectionVector(_direction);
+
+		if (GetParent() is PlayerMovementRigidbody player)
+		{
+            bullet.Initialize(_bulletPreset, player.PlayerId);
+            GetTree().Root.AddChild(bullet);
+        }
+    }
 
 	private Vector2 GetDirectionVector(int direction)
 	{

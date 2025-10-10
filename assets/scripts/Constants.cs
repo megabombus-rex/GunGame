@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GunGame.assets.scripts
 {
@@ -13,7 +9,8 @@ namespace GunGame.assets.scripts
         {
             Player = 1,
             Platform = 2,
-            Items = 4
+            Item = 4,
+            Bullet = 8,
         }
     }
 }

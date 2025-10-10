@@ -12,5 +12,7 @@ namespace GunGame.assets.scripts.weapon
         public float FireRatePerSecond { get; set; }
         public BulletType BulletType { get; set; }
         public float BulletSpeed { get; set; }
+
+        public BulletPreset BulletPreset { get; set; }
     }
 }

@@ -17,11 +17,14 @@ public partial class PlayerMovementRigidbody : RigidBody2D
 
     private int _direction = 1;
     private AnimatedSprite2D _playerAnimation;
-    private CollisionShape2D _playerHitbox;
+    private CollisionShape2D _bodyCollision;
+    private Area2D _hitbox;
     private Area2D _pickupDetector;
     private List<IHoldableItem> _pickupList = new();
     private IHoldableItem _closestPickableItem = null;
     private IHoldableItem _heldObject = null;
+
+    public int PlayerId { get { return _number; } }
 
     private int _number;
     private int _deviceId;
@@ -37,15 +40,20 @@ public partial class PlayerMovementRigidbody : RigidBody2D
     [Export] public float Acceleration { get; set; } = 1.0f;
     [Export] public float JumpForce { get; set; } = -400.0f;
 
-
     [Export] public float GroundRayLength { get; set; } = 75.0f; // For ground detection
+
+    // make the health as '%' as in Smash
+    private float _hitpoints = 0.0f;
+
+    private const float HIT_FORCE_MULTIPLIER = 5.0f;
 
     public override void _Ready()
     {
         GD.Print("Player ready.");
 
         _playerAnimation = GetNode<AnimatedSprite2D>("PlayerAnimation");
-        _playerHitbox = GetNode<CollisionShape2D>("Hitbox");
+        _bodyCollision = GetNode<CollisionShape2D>("BodyCollision");
+        _hitbox = GetNode<Area2D>("Hitbox");
 
         _pickupDetector = GetNode<Area2D>("PickupArea");
         _pickupDetector.CollisionMask = 6;
@@ -68,19 +76,24 @@ public partial class PlayerMovementRigidbody : RigidBody2D
 
         if (_playerAnimation == null)
         {
-            GD.Print("Setting animation.");
             _playerAnimation = GetNode<AnimatedSprite2D>("PlayerAnimation");
         }
         _playerAnimation.SpriteFrames = GD.Load<SpriteFrames>(preset.DisplayAndPhysics.AnimationResoucrePath);
 
-        if (_playerHitbox == null)
+        if (_bodyCollision == null)
         {
-            GD.Print("Setting Hitbox.");
-            _playerHitbox = GetNode<CollisionShape2D>("Hitbox");
+            _bodyCollision = GetNode<CollisionShape2D>("BodyCollision");
         }
-        _playerHitbox.Shape = ShapeCreator.GetShapeBasedOnShapeType(preset.DisplayAndPhysics.ShapeType, preset.DisplayAndPhysics.ShapeDetails);
+        _bodyCollision.Shape = ShapeCreator.GetShapeBasedOnShapeType(preset.DisplayAndPhysics.ShapeType, preset.DisplayAndPhysics.ShapeDetails);
 
-        GD.Print($"Instantinated player: {_number}, with texture: {_playerAnimation.SpriteFrames.ResourcePath}, with shape: {_playerHitbox.Shape}");
+        if (_hitbox == null)
+        {
+            _hitbox = GetNode<Area2D>("Hitbox");
+        }
+        _hitbox.GetNode<CollisionShape2D>("HitboxShape").Shape = ShapeCreator.GetShapeBasedOnShapeType(preset.DisplayAndPhysics.ShapeType, preset.DisplayAndPhysics.ShapeDetails);
+        
+
+        GD.Print($"Instantinated player: {_number}, with texture: {_playerAnimation.SpriteFrames.ResourcePath}, with shape: {_bodyCollision.Shape}");
     }
 
 	public override void _Process(double delta)
@@ -101,6 +114,13 @@ public partial class PlayerMovementRigidbody : RigidBody2D
     {
         CheckGrounded();
         HandleMovement(delta);
+    }
+
+    public void TakeDamage(float damage, Vector2 direction)
+    {
+        _hitpoints += damage;
+        var force = direction.Normalized() * _hitpoints * HIT_FORCE_MULTIPLIER;
+        ApplyCentralImpulse(force);
     }
 
     private void CheckGrounded()

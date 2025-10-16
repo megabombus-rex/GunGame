@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://13hh6g4xgxgd"]
+[gd_scene load_steps=6 format=3 uid="uid://13hh6g4xgxgd"]
 
 [ext_resource type="Texture2D" uid="uid://bxodjufrjmmfa" path="res://assets/sprites/blocks/Blank-texture-64x64.png" id="3_7ykc4"]
+[ext_resource type="Script" uid="uid://jcrptivoiy1y" path="res://assets/scripts/system/game/GameManager.cs" id="4_gubc5"]
 [ext_resource type="PackedScene" uid="uid://dnok71q3gmhvn" path="res://scenes/system/weapon_spawner.tscn" id="4_pu3yx"]
 [ext_resource type="Script" uid="uid://ch5pp528o0o6m" path="res://assets/scripts/system/player_management/PlayerManager.cs" id="5_gubc5"]
 
@@ -28,5 +29,12 @@ shape = SubResource("RectangleShape2D_7ykc4")
 
 [node name="WeaponSpawner" parent="." instance=ExtResource("4_pu3yx")]
 
-[node name="PlayerManager" type="Node2D" parent="."]
+[node name="GameManager" type="Node2D" parent="."]
+position = Vector2(576, 323)
+script = ExtResource("4_gubc5")
+
+[node name="Camera2D" type="Camera2D" parent="GameManager"]
+
+[node name="PlayerManager" type="Node2D" parent="GameManager"]
+position = Vector2(-576, -323)
 script = ExtResource("5_gubc5")

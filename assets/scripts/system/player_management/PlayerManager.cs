@@ -11,6 +11,8 @@ public partial class PlayerManager : Node2D
     private List<PlayerMovementRigidbody> _presentPlayersList = new List<PlayerMovementRigidbody>(MAX_PLAYER_COUNT);
     private int _currentIndex = 0;
 
+    public List<PlayerMovementRigidbody> PresentPlayersList { get { return _presentPlayersList; } }
+
     public override void _Ready()
     {
         if (_playerScene != null)

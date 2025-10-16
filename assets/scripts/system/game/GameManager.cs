@@ -8,8 +8,11 @@ public partial class GameManager : Node2D
 	private PlayerManager _playerManager;
 
 	private readonly Vector2 _minZoom = new(0.5f, 0.5f);
+	private readonly Vector2 _defaultZoom = new(1.0f, 1.0f);
 	private readonly Vector2 _maxZoom = new(3.0f, 3.0f);
-	private readonly float _zoomLerpSpeed = 5.0f;
+	private readonly float _minZoomDistance = 200.0f;
+	private readonly float _maxZoomDistance = 1000.0f;
+    private readonly float _zoomLerpSpeed = 5.0f;
 
     public override void _Ready()
 	{
@@ -39,8 +42,19 @@ public partial class GameManager : Node2D
         var playerPositions = _playerManager.PresentPlayersList.Select(p => p.GlobalPosition);
 
 		_camera.GlobalPosition = playerPositions.Aggregate((a, b) => a + b) / _playerManager.PresentPlayersList.Count;
-		//_camera.Zoom = new Vector2()
-		var zoom = Mathf.Sqrt(playerPositions.Max(p => p.DistanceTo(_camera.GlobalPosition))) / 200.0f;
-		_camera.Zoom = _camera.Zoom.Lerp(new Vector2(zoom, zoom).Clamp(_minZoom, _maxZoom), (float)delta * _zoomLerpSpeed);
+
+        // max zoom = min distance => 200.0f - 3.0f
+        // min zoom = max distance => 1000.0f - 0.5f
+        var zoom = playerPositions.Max(p => p.DistanceTo(_camera.GlobalPosition));
+
+		var targetZoom = _defaultZoom;
+
+        if (zoom < _minZoomDistance)
+		{
+			targetZoom = _maxZoom;
+        }
+
+
+		_camera.Zoom = _camera.Zoom.Lerp(targetZoom.Clamp(_minZoom, _maxZoom), (float)delta * _zoomLerpSpeed);
 	}
 }

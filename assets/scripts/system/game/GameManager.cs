@@ -45,16 +45,31 @@ public partial class GameManager : Node2D
 
         // max zoom = min distance => 200.0f - 3.0f
         // min zoom = max distance => 1000.0f - 0.5f
-        var zoom = playerPositions.Max(p => p.DistanceTo(_camera.GlobalPosition));
+        var maxDistance = playerPositions.Max(p => p.DistanceTo(_camera.GlobalPosition));
 
-		var targetZoom = _defaultZoom;
-
-        if (zoom < _minZoomDistance)
-		{
-			targetZoom = _maxZoom;
-        }
+		var targetZoom = GetDistanceVector(maxDistance);
 
 
 		_camera.Zoom = _camera.Zoom.Lerp(targetZoom.Clamp(_minZoom, _maxZoom), (float)delta * _zoomLerpSpeed);
 	}
+
+	// distance is to camera
+	private Vector2 GetDistanceVector(float distance)
+	{
+		GD.Print(distance);
+		distance = distance - _minZoomDistance;
+        if (distance > _maxZoomDistance)
+        {
+            return _minZoom;
+        }
+		if (distance < _minZoomDistance)
+		{
+			return _maxZoom;
+		}
+		var ratio = distance / (_maxZoomDistance - _minZoomDistance);
+		var tar = _minZoom + (_maxZoom - _minZoom) * ratio;
+
+		GD.Print(tar);
+		return tar;
+    }
 }

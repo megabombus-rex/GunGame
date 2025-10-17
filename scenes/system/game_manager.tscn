@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://blj75abf7exyc"]
+
+[ext_resource type="Script" uid="uid://jcrptivoiy1y" path="res://assets/scripts/system/game/GameManager.cs" id="1_jqmix"]
+[ext_resource type="Script" uid="uid://ch5pp528o0o6m" path="res://assets/scripts/system/player_management/PlayerManager.cs" id="2_kj03r"]
+
+[node name="GameManager" type="Node2D"]
+script = ExtResource("1_jqmix")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="PlayerManager" type="Node2D" parent="."]
+position = Vector2(-576, -323)
+script = ExtResource("2_kj03r")

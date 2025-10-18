@@ -32,6 +32,8 @@ public partial class GameManager : Node2D
 		{
 			_playerManager = GetNode<PlayerManager>("PlayerManager");
 		}
+		_playerManager.Position = new Vector2(0.0f, 0.0f);
+		_playerManager.GlobalPosition = GlobalPosition;
 		_camera.GlobalPosition = GlobalPosition;
 		_camera.Position = Vector2.Zero;
 	}

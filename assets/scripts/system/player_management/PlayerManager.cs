@@ -14,7 +14,7 @@ public partial class PlayerManager : Node2D
     private int _currentIndex = 0;
 
     private List<CharacterDisplay> _characterDisplayList = new List<CharacterDisplay>(MAX_PLAYER_COUNT);
-    private GridContainer _characterDisplaysGrid;
+    private HBoxContainer _characterDisplaysGrid;
 
     public override void _Ready()
     {
@@ -29,7 +29,7 @@ public partial class PlayerManager : Node2D
 
         if (_characterDisplaysGrid == null)
         {
-            _characterDisplaysGrid = GetNode<GridContainer>("UI/CharacterDisplayGrid");
+            _characterDisplaysGrid = GetNode<HBoxContainer>("UI/CharacterDisplayGrid");
             var gridChildren = _characterDisplaysGrid.GetChildren();
 
             foreach (var child in gridChildren)
@@ -39,6 +39,12 @@ public partial class PlayerManager : Node2D
                     child.QueueFree();
                 }
             }
+            _characterDisplaysGrid.Position = new Vector2(0, 0);
+            _characterDisplaysGrid.GlobalPosition = GlobalPosition;
+            _characterDisplaysGrid.GrowHorizontal = Control.GrowDirection.End;
+            var size = GetViewport().GetVisibleRect().Size;
+            _characterDisplaysGrid.Position = new Vector2((size.X / 2) - 128, size.Y - 128);
+            _characterDisplaysGrid.Scale = new Vector2(2.0f, 2.0f);
         }
     }
 

@@ -9,6 +9,9 @@ using System.Linq;
 
 public partial class PlayerMovementRigidbody : RigidBody2D
 {
+    [Signal]
+    public delegate void HealthChangedEventHandler(int playerId, int oldValue, int newValue);
+
     private enum AnimationState
     {
         standby = 0,
@@ -118,7 +121,10 @@ public partial class PlayerMovementRigidbody : RigidBody2D
 
     public void TakeDamage(float damage, Vector2 direction)
     {
-        _hitpoints += damage;
+        var hitpointsWithDamage = _hitpoints + damage;
+        GD.Print($"Hitpoints before hit: {_hitpoints}, after hit: {hitpointsWithDamage}");
+        EmitSignal("HealthChanged", _number, _hitpoints, hitpointsWithDamage);
+        _hitpoints = hitpointsWithDamage;
         var force = direction.Normalized() * _hitpoints * HIT_FORCE_MULTIPLIER;
         ApplyCentralImpulse(force);
     }

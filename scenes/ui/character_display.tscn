@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://ck7e3v1eu4qn0"]
+
+[ext_resource type="Script" uid="uid://j8i0ueldfx67" path="res://assets/scripts/ui/CharacterDisplay.cs" id="1_0j381"]
+
+[node name="CharacterDisplay" type="PanelContainer"]
+script = ExtResource("1_0j381")
+
+[node name="Hitpoints" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+
+[node name="PlayerIcon" type="TextureRect" parent="."]
+layout_mode = 2

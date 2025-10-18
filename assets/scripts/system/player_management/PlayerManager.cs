@@ -7,17 +7,38 @@ public partial class PlayerManager : Node2D
 {
     private const int MAX_PLAYER_COUNT = 2;
     private PackedScene _playerScene = GD.Load<PackedScene>("res://scenes/player/player.tscn");
+    private PackedScene _playerDisplaysScene = GD.Load<PackedScene>("res://scenes/ui/character_display.tscn");
 
+    public List<PlayerMovementRigidbody> PresentPlayersList { get { return _presentPlayersList; } }
     private List<PlayerMovementRigidbody> _presentPlayersList = new List<PlayerMovementRigidbody>(MAX_PLAYER_COUNT);
     private int _currentIndex = 0;
 
-    public List<PlayerMovementRigidbody> PresentPlayersList { get { return _presentPlayersList; } }
+    private List<CharacterDisplay> _characterDisplayList = new List<CharacterDisplay>(MAX_PLAYER_COUNT);
+    private GridContainer _characterDisplaysGrid;
 
     public override void _Ready()
     {
-        if (_playerScene != null)
+        if (_playerScene == null)
         {
             _playerScene = GD.Load<PackedScene>("res://scenes/player/player.tscn");
+        }
+        if (_playerDisplaysScene == null)
+        {
+            _playerDisplaysScene = GD.Load<PackedScene>("res://scenes/ui/character_display.tscn");
+        }
+
+        if (_characterDisplaysGrid == null)
+        {
+            _characterDisplaysGrid = GetNode<GridContainer>("UI/CharacterDisplayGrid");
+            var gridChildren = _characterDisplaysGrid.GetChildren();
+
+            foreach (var child in gridChildren)
+            {
+                if (child is CharacterDisplay)
+                {
+                    child.QueueFree();
+                }
+            }
         }
     }
 
@@ -48,6 +69,12 @@ public partial class PlayerManager : Node2D
 
                 GetTree().Root.AddChild(player);
                 _presentPlayersList.Add(player);
+                var characterDisplay = _playerDisplaysScene.Instantiate<CharacterDisplay>();
+
+                characterDisplay.Initialize(player, preset.DisplayAndPhysics.CharacterPortraitTexturePath);
+                _characterDisplayList.Add(characterDisplay);
+                _characterDisplaysGrid.AddChild(characterDisplay);
+                GD.Print($"Display list: {_characterDisplayList.Count}. Player list: {_presentPlayersList.Count}.");
                 _currentIndex++;
             }
         }
@@ -58,6 +85,8 @@ public partial class PlayerManager : Node2D
                 _currentIndex--;
                 _presentPlayersList[_currentIndex].QueueFree();
                 _presentPlayersList.RemoveAt(_currentIndex);
+                _characterDisplayList[_currentIndex].QueueFree();
+                _characterDisplayList.RemoveAt(_currentIndex);
             }
         }
     }
@@ -117,7 +146,8 @@ public partial class PlayerManager : Node2D
                     X = 25.0f,
                     Y = 25.0f
                 },
-                AnimationResoucrePath = "res://assets/animations/character/kernel-animations.tres"
+                AnimationResoucrePath = "res://assets/animations/character/kernel-animations.tres",
+                CharacterPortraitTexturePath = "res://assets/sprites/kernel/Kernel-portrait-64x64.png"
             }
         },
         { 1, new PlayerDisplayAndPhysics()
@@ -128,7 +158,8 @@ public partial class PlayerManager : Node2D
                     X = 20.0f,
                     Y = 35.0f
                 },
-                AnimationResoucrePath = "res://assets/animations/character/donut-man-animations.tres"
+                AnimationResoucrePath = "res://assets/animations/character/donut-man-animations.tres",
+                CharacterPortraitTexturePath = "res://assets/sprites/character/donut-man/Donut-man-portrait-64x64.png"
             }
         }
     };

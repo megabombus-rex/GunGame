@@ -1,6 +1,6 @@
 [gd_resource type="SpriteFrames" load_steps=9 format=3 uid="uid://c4cvgjgaobnej"]
 
-[ext_resource type="Texture2D" uid="uid://brq1hhycxu2xc" path="res://assets/sprites/kernel/Kernel-standby-Shee-64x64t.png" id="1_vmk75"]
+[ext_resource type="Texture2D" uid="uid://brq1hhycxu2xc" path="res://assets/sprites/kernel/Kernel-standby-Sheet-64x64.png" id="1_vmk75"]
 [ext_resource type="Texture2D" uid="uid://dlbb5s5u3qdqs" path="res://assets/sprites/kernel/Kernel-walking-Sheet-64x64.png" id="2_go37m"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pu3yx"]

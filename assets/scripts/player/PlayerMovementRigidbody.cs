@@ -135,7 +135,15 @@ public partial class PlayerMovementRigidbody : RigidBody2D
         var afterDecrease = _livesCount - 1;
         EmitSignal("PlayerDied", _number, afterDecrease);
         _livesCount = afterDecrease;
+        EmitSignal("HealthChanged", _number, _hitpoints, 0.0f);
+        _hitpoints = 0.0f;
         LinearVelocity = new Vector2(0.0f, 0.0f);
+
+        if (_heldObject != null) 
+        { 
+            (_heldObject as Node2D).QueueFree();
+            _heldObject = null;
+        }
     }
 
     private void CheckGrounded()

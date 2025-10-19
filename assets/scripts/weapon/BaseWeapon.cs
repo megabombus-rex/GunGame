@@ -10,8 +10,6 @@ public partial class BaseWeapon : Area2D, IHoldableItem
 	[Export] public float FireRatePerSecond = 1.0f;
 	[Export] public Vector2 BulletSpawnOffset = new Vector2(0.0f, 0.0f);
 
-	// test commit :3
-
     public bool IsHeld { get => _isHeld; set { _isHeld = value; } }
 
     public string ItemName => _weaponName;

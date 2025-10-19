@@ -2,12 +2,24 @@ using Godot;
 using GunGame.assets.scripts.misc;
 using GunGame.assets.scripts.system.player_management;
 using System.Collections.Generic;
+using System.Linq;
+
+public struct PlayerGlobalPosition
+{
+    public int PlayerId {  get; init; }
+    public Vector2 GlobalPosition { get; init; }
+}
 
 public partial class PlayerManager : Node2D
 {
     private const int MAX_PLAYER_COUNT = 2;
     private PackedScene _playerScene = GD.Load<PackedScene>("res://scenes/player/player.tscn");
     private PackedScene _playerDisplaysScene = GD.Load<PackedScene>("res://scenes/ui/character_display.tscn");
+
+    // this should be a spawn point list, maybe based on map, or a strategy, idk yet
+    private Vector2 _spawnPoint = new Vector2(500.0f, 200.0f);
+
+    [Export] public int StartingPlayerLivesCount { get; set; } = 3;
 
     public List<PlayerMovementRigidbody> PresentPlayersList { get { return _presentPlayersList; } }
     private List<PlayerMovementRigidbody> _presentPlayersList = new List<PlayerMovementRigidbody>(MAX_PLAYER_COUNT);
@@ -48,6 +60,35 @@ public partial class PlayerManager : Node2D
         }
     }
 
+    public List<PlayerGlobalPosition> GetPlayerPositions()
+    {
+        return _presentPlayersList
+            .Select(p => new PlayerGlobalPosition() { 
+                GlobalPosition = p.GlobalPosition, 
+                PlayerId = p.PlayerId })
+            .ToList();
+    }
+
+    public void KillPlayer(int playerId)
+    {
+        var player = _presentPlayersList.Where(p => p.PlayerId == playerId).FirstOrDefault();
+
+        if (player == null)
+        {
+            return;
+        }
+        player.Died();
+
+        if (player.LivesCount > 0)
+        {
+            player.GlobalPosition = _spawnPoint;
+            return;
+        }
+        _presentPlayersList.Remove(player);
+        _currentIndex--;
+        player.QueueFree();
+    }
+
     public override void _Process(double delta)
     {
         // temporarily like this
@@ -68,10 +109,11 @@ public partial class PlayerManager : Node2D
                     DisplayAndPhysics = display,
                     Stats = stats,
                     PlayerNumber = _currentIndex + 1,
+                    LivesCount = StartingPlayerLivesCount
                 };
 
                 player.Initialize(preset);
-                player.GlobalPosition = new Vector2(500.0f, 200.0f);
+                player.GlobalPosition = _spawnPoint;
 
                 GetTree().Root.AddChild(player);
                 _presentPlayersList.Add(player);
@@ -84,17 +126,17 @@ public partial class PlayerManager : Node2D
                 _currentIndex++;
             }
         }
-        if (Input.IsActionJustPressed("Remove_player"))
-        {
-            if (_presentPlayersList.Count > 0)
-            {
-                _currentIndex--;
-                _presentPlayersList[_currentIndex].QueueFree();
-                _presentPlayersList.RemoveAt(_currentIndex);
-                _characterDisplayList[_currentIndex].QueueFree();
-                _characterDisplayList.RemoveAt(_currentIndex);
-            }
-        }
+        //if (Input.IsActionJustPressed("Remove_player"))
+        //{
+        //    if (_presentPlayersList.Count > 0)
+        //    {
+        //        _currentIndex--;
+        //        _presentPlayersList[_currentIndex].QueueFree();
+        //        _presentPlayersList.RemoveAt(_currentIndex);
+        //        _characterDisplayList[_currentIndex].QueueFree();
+        //        _characterDisplayList.RemoveAt(_currentIndex);
+        //    }
+        //}
     }
 
     // preset id may be used as player number

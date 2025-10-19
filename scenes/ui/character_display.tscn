@@ -8,7 +8,13 @@ script = ExtResource("1_0j381")
 [node name="PlayerIcon" type="TextureRect" parent="."]
 layout_mode = 2
 
-[node name="Hitpoints" type="Label" parent="."]
+[node name="HPBox" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Lives" type="Label" parent="HPBox"]
+layout_mode = 2
+
+[node name="Hitpoints" type="Label" parent="HPBox"]
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 8

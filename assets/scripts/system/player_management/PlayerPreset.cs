@@ -5,6 +5,7 @@ namespace GunGame.assets.scripts.system.player_management
         public PlayerMovementMapping MovementMapping { get; init; }
         public PlayerDisplayAndPhysics DisplayAndPhysics { get; init; }
         public PlayerStats Stats { get; init; }
+        public int LivesCount { get; init; }
         public int PlayerNumber { get; init; }
     }
 }

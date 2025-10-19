@@ -89,7 +89,6 @@ public partial class BaseWeapon : Area2D, IHoldableItem
         GlobalScale = new Vector2(GlobalScale.X, (GlobalScale.Y * _direction));
 
 		var absRot = Mathf.Abs(GlobalRotationDegrees);
-		GD.Print($"Abs rot: {absRot}");
 
 		if (absRot >= 0 && absRot < 2.0f)
 		{

@@ -77,7 +77,7 @@ public partial class Bullet : Area2D
             {
                 return;
             }
-            rb.TakeDamage(Velocity, _flightDirection);
+            rb.TakeDamage(InitialDamage, _flightDirection);
         }
         QueueFree();
     }

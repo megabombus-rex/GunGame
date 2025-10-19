@@ -9,13 +9,15 @@ using System.Linq;
 
 public partial class PlayerMovementRigidbody : RigidBody2D
 {
+    [Signal] public delegate void HealthChangedEventHandler(int playerId, int oldValue, int newValue);
+    [Signal] public delegate void PlayerDiedEventHandler(int playerId, int newValue);
+
     private enum AnimationState
     {
         standby = 0,
         walk = 1
     }
 
-    private int _direction = 1;
     private AnimatedSprite2D _playerAnimation;
     private CollisionShape2D _bodyCollision;
     private Area2D _hitbox;
@@ -25,6 +27,7 @@ public partial class PlayerMovementRigidbody : RigidBody2D
     private IHoldableItem _heldObject = null;
 
     public int PlayerId { get { return _number; } }
+    public int LivesCount { get { return _livesCount; } }
 
     private int _number;
     private int _deviceId;
@@ -34,7 +37,9 @@ public partial class PlayerMovementRigidbody : RigidBody2D
     private string _pickUpCommand = "p1_pickup";
     private string _useItemCommand = "p1_useItem";
 
+    private int _direction = 1;
     private bool _isGrounded = false;
+    private int _livesCount = 3;
 
     [Export] public int MaxSpeed { get; set; } = 40000;
     [Export] public float Acceleration { get; set; } = 1.0f;
@@ -118,9 +123,19 @@ public partial class PlayerMovementRigidbody : RigidBody2D
 
     public void TakeDamage(float damage, Vector2 direction)
     {
-        _hitpoints += damage;
+        var hitpointsWithDamage = _hitpoints + damage;
+        EmitSignal("HealthChanged", _number, _hitpoints, hitpointsWithDamage);
+        _hitpoints = hitpointsWithDamage;
         var force = direction.Normalized() * _hitpoints * HIT_FORCE_MULTIPLIER;
         ApplyCentralImpulse(force);
+    }
+
+    public void Died()
+    {
+        var afterDecrease = _livesCount - 1;
+        EmitSignal("PlayerDied", _number, afterDecrease);
+        _livesCount = afterDecrease;
+        LinearVelocity = new Vector2(0.0f, 0.0f);
     }
 
     private void CheckGrounded()

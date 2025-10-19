@@ -2,23 +2,91 @@ using Godot;
 using GunGame.assets.scripts.misc;
 using GunGame.assets.scripts.system.player_management;
 using System.Collections.Generic;
+using System.Linq;
+
+public struct PlayerGlobalPosition
+{
+    public int PlayerId {  get; init; }
+    public Vector2 GlobalPosition { get; init; }
+}
 
 public partial class PlayerManager : Node2D
 {
     private const int MAX_PLAYER_COUNT = 2;
     private PackedScene _playerScene = GD.Load<PackedScene>("res://scenes/player/player.tscn");
+    private PackedScene _playerDisplaysScene = GD.Load<PackedScene>("res://scenes/ui/character_display.tscn");
 
+    // this should be a spawn point list, maybe based on map, or a strategy, idk yet
+    private Vector2 _spawnPoint = new Vector2(500.0f, 200.0f);
+
+    [Export] public int StartingPlayerLivesCount { get; set; } = 3;
+
+    public List<PlayerMovementRigidbody> PresentPlayersList { get { return _presentPlayersList; } }
     private List<PlayerMovementRigidbody> _presentPlayersList = new List<PlayerMovementRigidbody>(MAX_PLAYER_COUNT);
     private int _currentIndex = 0;
 
-    public List<PlayerMovementRigidbody> PresentPlayersList { get { return _presentPlayersList; } }
+    private List<CharacterDisplay> _characterDisplayList = new List<CharacterDisplay>(MAX_PLAYER_COUNT);
+    private HBoxContainer _characterDisplaysGrid;
 
     public override void _Ready()
     {
-        if (_playerScene != null)
+        if (_playerScene == null)
         {
             _playerScene = GD.Load<PackedScene>("res://scenes/player/player.tscn");
         }
+        if (_playerDisplaysScene == null)
+        {
+            _playerDisplaysScene = GD.Load<PackedScene>("res://scenes/ui/character_display.tscn");
+        }
+
+        if (_characterDisplaysGrid == null)
+        {
+            _characterDisplaysGrid = GetNode<HBoxContainer>("UI/CharacterDisplayGrid");
+            var gridChildren = _characterDisplaysGrid.GetChildren();
+
+            foreach (var child in gridChildren)
+            {
+                if (child is CharacterDisplay)
+                {
+                    child.QueueFree();
+                }
+            }
+            _characterDisplaysGrid.Position = new Vector2(0, 0);
+            _characterDisplaysGrid.GlobalPosition = GlobalPosition;
+            _characterDisplaysGrid.GrowHorizontal = Control.GrowDirection.End;
+            var size = GetViewport().GetVisibleRect().Size;
+            _characterDisplaysGrid.Position = new Vector2((size.X / 2) - 128, size.Y - 128);
+            _characterDisplaysGrid.Scale = new Vector2(2.0f, 2.0f);
+        }
+    }
+
+    public List<PlayerGlobalPosition> GetPlayerPositions()
+    {
+        return _presentPlayersList
+            .Select(p => new PlayerGlobalPosition() { 
+                GlobalPosition = p.GlobalPosition, 
+                PlayerId = p.PlayerId })
+            .ToList();
+    }
+
+    public void KillPlayer(int playerId)
+    {
+        var player = _presentPlayersList.Where(p => p.PlayerId == playerId).FirstOrDefault();
+
+        if (player == null)
+        {
+            return;
+        }
+        player.Died();
+
+        if (player.LivesCount > 0)
+        {
+            player.GlobalPosition = _spawnPoint;
+            return;
+        }
+        _presentPlayersList.Remove(player);
+        _currentIndex--;
+        player.QueueFree();
     }
 
     public override void _Process(double delta)
@@ -41,25 +109,34 @@ public partial class PlayerManager : Node2D
                     DisplayAndPhysics = display,
                     Stats = stats,
                     PlayerNumber = _currentIndex + 1,
+                    LivesCount = StartingPlayerLivesCount
                 };
 
                 player.Initialize(preset);
-                player.GlobalPosition = new Vector2(500.0f, 200.0f);
+                player.GlobalPosition = _spawnPoint;
 
                 GetTree().Root.AddChild(player);
                 _presentPlayersList.Add(player);
+                var characterDisplay = _playerDisplaysScene.Instantiate<CharacterDisplay>();
+
+                characterDisplay.Initialize(player, preset.DisplayAndPhysics.CharacterPortraitTexturePath);
+                _characterDisplayList.Add(characterDisplay);
+                _characterDisplaysGrid.AddChild(characterDisplay);
+                GD.Print($"Display list: {_characterDisplayList.Count}. Player list: {_presentPlayersList.Count}.");
                 _currentIndex++;
             }
         }
-        if (Input.IsActionJustPressed("Remove_player"))
-        {
-            if (_presentPlayersList.Count > 0)
-            {
-                _currentIndex--;
-                _presentPlayersList[_currentIndex].QueueFree();
-                _presentPlayersList.RemoveAt(_currentIndex);
-            }
-        }
+        //if (Input.IsActionJustPressed("Remove_player"))
+        //{
+        //    if (_presentPlayersList.Count > 0)
+        //    {
+        //        _currentIndex--;
+        //        _presentPlayersList[_currentIndex].QueueFree();
+        //        _presentPlayersList.RemoveAt(_currentIndex);
+        //        _characterDisplayList[_currentIndex].QueueFree();
+        //        _characterDisplayList.RemoveAt(_currentIndex);
+        //    }
+        //}
     }
 
     // preset id may be used as player number
@@ -117,7 +194,8 @@ public partial class PlayerManager : Node2D
                     X = 25.0f,
                     Y = 25.0f
                 },
-                AnimationResoucrePath = "res://assets/animations/character/kernel-animations.tres"
+                AnimationResoucrePath = "res://assets/animations/character/kernel-animations.tres",
+                CharacterPortraitTexturePath = "res://assets/sprites/kernel/Kernel-portrait-64x64.png"
             }
         },
         { 1, new PlayerDisplayAndPhysics()
@@ -128,7 +206,8 @@ public partial class PlayerManager : Node2D
                     X = 20.0f,
                     Y = 35.0f
                 },
-                AnimationResoucrePath = "res://assets/animations/character/donut-man-animations.tres"
+                AnimationResoucrePath = "res://assets/animations/character/donut-man-animations.tres",
+                CharacterPortraitTexturePath = "res://assets/sprites/character/donut-man/Donut-man-portrait-64x64.png"
             }
         }
     };

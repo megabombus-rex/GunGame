@@ -9,5 +9,10 @@ script = ExtResource("1_jqmix")
 [node name="Camera2D" type="Camera2D" parent="."]
 
 [node name="PlayerManager" type="Node2D" parent="."]
-position = Vector2(-576, -323)
 script = ExtResource("2_kj03r")
+
+[node name="UI" type="CanvasLayer" parent="PlayerManager"]
+
+[node name="CharacterDisplayGrid" type="HBoxContainer" parent="PlayerManager/UI"]
+offset_right = 40.0
+offset_bottom = 40.0

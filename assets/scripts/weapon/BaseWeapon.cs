@@ -87,7 +87,17 @@ public partial class BaseWeapon : Area2D, IHoldableItem
     {
         _direction = -_direction;
         GlobalScale = new Vector2(GlobalScale.X, (GlobalScale.Y * _direction));
-		GlobalRotationDegrees = Mathf.Ceil(GlobalRotationDegrees + 180.0f);
+
+		var absRot = Mathf.Abs(GlobalRotationDegrees);
+
+		if (absRot >= 0 && absRot < 2.0f)
+		{
+			GlobalRotationDegrees = 180;
+		}
+		else
+		{
+			GlobalRotationDegrees = 0;
+		}
     }
 
     private void SpawnBullet()

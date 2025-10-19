@@ -1,4 +1,5 @@
 using Godot;
+using System.Collections.Generic;
 using System.Linq;
 
 public enum ZoomCalculationFunction
@@ -12,6 +13,8 @@ public partial class GameManager : Node2D
 {
 	private Camera2D _camera;
 	private PlayerManager _playerManager;
+
+	private Rect2 _mapBorder = new Rect2() { Position = new Vector2(-200.0f, 0.0f), End = new Vector2(1600.0f, 1800.0f) };
 
 	private readonly Vector2 _minZoom = new(0.5f, 0.5f);
 	private readonly Vector2 _defaultZoom = new(1.0f, 1.0f);
@@ -32,6 +35,8 @@ public partial class GameManager : Node2D
 		{
 			_playerManager = GetNode<PlayerManager>("PlayerManager");
 		}
+		_playerManager.Position = new Vector2(0.0f, 0.0f);
+		_playerManager.GlobalPosition = GlobalPosition;
 		_camera.GlobalPosition = GlobalPosition;
 		_camera.Position = Vector2.Zero;
 	}
@@ -45,14 +50,28 @@ public partial class GameManager : Node2D
 			return;
 		}
 
-
-        // these lines are left like this for clarity
-        var playerPositions = _playerManager.PresentPlayersList.Select(p => p.GlobalPosition);
-		_camera.GlobalPosition = playerPositions.Aggregate((a, b) => a + b) / _playerManager.PresentPlayersList.Count;
-
-		var maxDistance = playerPositions.Max(p => p.DistanceTo(_camera.GlobalPosition));
-		_camera.Zoom = _camera.Zoom.Lerp(GetDistanceVector(maxDistance).Clamp(_minZoom, _maxZoom), (float)delta * _zoomLerpSpeed);
+        var playerPositions = _playerManager.GetPlayerPositions();
+		ManageCamera(delta, playerPositions.Select(p => p.GlobalPosition));
+		ManagePlayerDeaths(playerPositions);
 	}
+
+	private void ManagePlayerDeaths(IEnumerable<PlayerGlobalPosition> playerGlobalPositions) 
+	{
+		var playersOutsideBordersIds = playerGlobalPositions.Where(p => !_mapBorder.HasPoint(p.GlobalPosition)).Select(p => p.PlayerId);
+
+		foreach (var playerId in playersOutsideBordersIds) {
+			_playerManager.KillPlayer(playerId);
+		}
+	}
+
+	private void ManageCamera(double delta, IEnumerable<Vector2> playerPositions)
+	{
+        // these lines are left like this for clarity
+        _camera.GlobalPosition = playerPositions.Aggregate((a, b) => a + b) / _playerManager.PresentPlayersList.Count;
+
+        var maxDistance = playerPositions.Max(p => p.DistanceTo(_camera.GlobalPosition));
+        _camera.Zoom = _camera.Zoom.Lerp(GetDistanceVector(maxDistance).Clamp(_minZoom, _maxZoom), (float)delta * _zoomLerpSpeed);
+    }
 
 	// distance is to camera
 	private Vector2 GetDistanceVector(float distance)

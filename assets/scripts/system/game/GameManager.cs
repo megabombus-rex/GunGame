@@ -69,6 +69,11 @@ public partial class GameManager : Node2D
         // these lines are left like this for clarity
         _camera.GlobalPosition = playerPositions.Aggregate((a, b) => a + b) / _playerManager.PresentPlayersList.Count;
 
+		if (_playerManager.PresentPlayersList.Count == 1)
+		{
+            _camera.Zoom.Lerp(_defaultZoom, (float)delta * _zoomLerpSpeed);
+        }
+
         var maxDistance = playerPositions.Max(p => p.DistanceTo(_camera.GlobalPosition));
         _camera.Zoom = _camera.Zoom.Lerp(GetDistanceVector(maxDistance).Clamp(_minZoom, _maxZoom), (float)delta * _zoomLerpSpeed);
     }

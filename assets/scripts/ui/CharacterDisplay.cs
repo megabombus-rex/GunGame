@@ -51,9 +51,16 @@ public partial class CharacterDisplay : PanelContainer
 	{
 		if (_currentHp.ToString("0.00") != _hpToAchieve.ToString("0.00"))
 		{
-			_currentHp = Mathf.Min(_currentHp + (float)delta * _hpChangeSpeedPerSecond, _hpToAchieve);
 			GD.Print($"Hp to achieve: {_hpToAchieve}, current display: {_currentHp.ToString("0.00")}");
-			_hitpointsLabel.Text = $"{_currentHp.ToString("0.00")}%";
+            if (_currentHp < _hpToAchieve)
+            {
+			    _currentHp = Mathf.Min(_currentHp + (float)delta * _hpChangeSpeedPerSecond, _hpToAchieve);
+            }
+            else
+            {
+                _currentHp = Mathf.Max(_currentHp - (float)delta * _hpChangeSpeedPerSecond, _hpToAchieve);
+            }
+                _hitpointsLabel.Text = $"{_currentHp.ToString("0.00")}%";
         }
     }
 

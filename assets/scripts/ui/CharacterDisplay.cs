@@ -42,8 +42,11 @@ public partial class CharacterDisplay : PanelContainer
 		{
 			return;
 		}
-		_currentHp = oldValue;
-		_hpToAchieve = newValue;
+        if (_currentHp <= 1.0f)
+        {
+    		_currentHp = oldValue;
+        }
+        _hpToAchieve = newValue;
 		GD.Print($"Player {_playerId} hit, Hp to achieve: {_hpToAchieve}, current display: {_currentHp.ToString("0.00")}");
     }
 
@@ -60,7 +63,7 @@ public partial class CharacterDisplay : PanelContainer
             {
                 _currentHp = Mathf.Max(_currentHp - (float)delta * _hpChangeSpeedPerSecond, _hpToAchieve);
             }
-                _hitpointsLabel.Text = $"{_currentHp.ToString("0.00")}%";
+            _hitpointsLabel.Text = $"{_currentHp.ToString("0.00")}%";
         }
     }
 
@@ -112,6 +115,6 @@ public partial class CharacterDisplay : PanelContainer
 
     public override void _Process(double delta)
 	{
-		AnimateHpChange(delta);
+        AnimateHpChange(delta);
 	}
 }
